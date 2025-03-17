@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "888799410150",
+    "project_id": "tennis-e1a71",
+    "storage_bucket": "tennis-e1a71.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888799410150:android:2f82f56082afa45b3bc827",
+        "android_client_info": {
+          "package_name": "com.tennis.book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEMQMnOYaljkb-6Po779cSh1TBFK6d5iw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888799410150:android:85968c232072d99f3bc827",
+        "android_client_info": {
+          "package_name": "com.tennis.book.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEMQMnOYaljkb-6Po779cSh1TBFK6d5iw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
