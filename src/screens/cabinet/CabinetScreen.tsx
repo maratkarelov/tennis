@@ -35,7 +35,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                 <TouchableOpacity style={{marginLeft: 12}} onPress={() => navigation.navigate('ProfileScreen')}>
                     <MaterialCommunityIcons
                         name="account-circle"
-                        color={baseColor.sky}
+                        color={baseColor.primary}
                         size={40}
                     />
                 </TouchableOpacity>
@@ -145,7 +145,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
             <MaterialCommunityIcons
                 name={'headset'}
                 size={40}
-                color={baseColor.sky}
+                color={baseColor.primary}
             ></MaterialCommunityIcons>
             <Text style={Styles.open_support_chat}>{I18n.t('cabinet.open_support_chat')}</Text>
         </TouchableOpacity>)
@@ -166,7 +166,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
             <MaterialCommunityIcons
                 name={'cog-outline'}
                 size={40}
-                color={baseColor.sky}
+                color={baseColor.primary}
             ></MaterialCommunityIcons>
             <Text style={Styles.open_support_chat}>{I18n.t('settings')}</Text>
         </TouchableOpacity>)
@@ -198,7 +198,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                     >
                         <MaterialCommunityIcons
                             size={40}
-                            color={baseColor.sky}
+                            color={baseColor.primary}
                             name={'close'}
                         />
                     </TouchableOpacity>
@@ -253,10 +253,10 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                         }}>
                             <MaterialCommunityIcons
                                 size={40}
-                                color={baseColor.sky}
+                                color={baseColor.primary}
                                 name={'share'}
                             />
-                            <Text style={{color: baseColor.sky, marginLeft: 10}}>{I18n.t('cabinet.send')}</Text>
+                            <Text style={{color: baseColor.primary, marginLeft: 10}}>{I18n.t('cabinet.send')}</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -273,10 +273,10 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                         }}>
                             <MaterialCommunityIcons
                                 size={40}
-                                color={baseColor.sky}
+                                color={baseColor.primary}
                                 name={'qrcode'}
                             />
-                            <Text style={{color: baseColor.sky, marginLeft: 10}}>{I18n.t('cabinet.qr_code')}</Text>
+                            <Text style={{color: baseColor.primary, marginLeft: 10}}>{I18n.t('cabinet.qr_code')}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

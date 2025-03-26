@@ -11,6 +11,7 @@ import {CabinetScreen} from '../screens/cabinet/CabinetScreen';
 import {EmailScreen} from '../screens/auth/email/EmailScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MainScreen} from '../screens/main/MainScreen';
+import SearchPlaceScreen from "../screens/places/SearchPlaceScreen";
 
 export type RootStackParams = {
     StartScreen: undefined;
@@ -77,7 +78,7 @@ export const StackNavigator = () => {
                 {/*<Stack.Screen name="BookingsScreen" component={BookingsScreen}/>*/}
                 {/*<Stack.Screen name="BookExternalPhoneScreen" component={BookExternalPhoneScreen}/>*/}
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}
-                {/*<Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>*/}
+                <Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>
                 {/*<Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen}/>*/}
                 <Stack.Screen name="ChatsScreen" component={ChatsScreen}/>
                 {/*<Stack.Screen name="MessagesScreen" component={MessagesScreen}/>*/}

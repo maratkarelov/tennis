@@ -90,7 +90,7 @@ const UpdateView = ()=>{
                         Styles.shouldUpdate,
                         {
                             backgroundColor: shouldUpdate
-                                ? baseColor.sky
+                                ? baseColor.primary
                                 : baseColor.white_50,
                         },
                     ]}>

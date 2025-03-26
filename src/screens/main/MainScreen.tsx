@@ -28,6 +28,10 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
+import {baseColor} from "../../theme/appTheme";
+import {SearchScreen} from "../schedules/search/SearchScreen";
+import CalendarScreen from "../schedules/calendar/CalendarScreen";
+import {LocationsScreen} from "../locations/LocationsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -128,7 +132,7 @@ export const MainScreen = ({route, navigation}: Props) => {
             if (navigation.canGoBack()) {
                 navigation.goBack();
             } else {
-                RNExitApp.exitApp();
+                // RNExitApp.exitApp();
             }
             return true;
         };
@@ -265,35 +269,39 @@ export const MainScreen = ({route, navigation}: Props) => {
                 setConfirmYes(undefined);
                 setConfirmNo(undefined);
             }}>
-            <Tab.Navigator initialRouteName={'CabinetScreen'}>
-                {/*{appMode === APP_MODE.SEARCH && <Tab.Screen*/}
-                {/*    name="SearchScreen"*/}
-                {/*    component={SearchScreen}*/}
-                {/*    options={{*/}
-                {/*        tabBarLabel: I18n.t('search'),*/}
-                {/*        tabBarIcon: ({color}) => (*/}
-                {/*            <MaterialCommunityIcons*/}
-                {/*                name="map-search-outline"*/}
-                {/*                color={color}*/}
-                {/*                size={22}*/}
-                {/*            />*/}
-                {/*        ),*/}
-                {/*    }}*/}
-                {/*/>}*/}
-                {/*{(auth().currentUser || appMode === APP_MODE.SCHEDULE) && <Tab.Screen*/}
-                {/*    name="CalendarScreen"*/}
-                {/*    component={CalendarScreen}*/}
-                {/*    options={{*/}
-                {/*        tabBarLabel: I18n.t(appMode === APP_MODE.SEARCH ? 'my_trips' : 'schedule'),*/}
-                {/*        tabBarIcon: ({color}) => (*/}
-                {/*            <MaterialCommunityIcons*/}
-                {/*                name={appMode === APP_MODE.SEARCH ? 'calendar' : 'car-clock'}*/}
-                {/*                color={color}*/}
-                {/*                size={22}*/}
-                {/*            />*/}
-                {/*        ),*/}
-                {/*    }}*/}
-                {/*/>}*/}
+            <Tab.Navigator initialRouteName={'CabinetScreen'}
+                           screenOptions={{
+                               tabBarActiveTintColor: baseColor.green,
+                           }}
+            >
+                {<Tab.Screen
+                    name="LocationsScreen"
+                    component={LocationsScreen}
+                    options={{
+                        tabBarLabel: I18n.t('search'),
+                        tabBarIcon: ({color}) => (
+                            <MaterialCommunityIcons
+                                name="map-search-outline"
+                                color={color}
+                                size={22}
+                            />
+                        ),
+                    }}
+                />}
+                <Tab.Screen
+                    name="CalendarScreen"
+                    component={CalendarScreen}
+                    options={{
+                        tabBarLabel: I18n.t(appMode === APP_MODE.SEARCH ? 'my_trips' : 'schedule'),
+                        tabBarIcon: ({color}) => (
+                            <MaterialCommunityIcons
+                                name={appMode === APP_MODE.SEARCH ? 'calendar' : 'clipboard-clock-outline'}
+                                color={color}
+                                size={22}
+                            />
+                        ),
+                    }}
+                />
                 {auth().currentUser && <Tab.Screen
                     name="MyChatsScreen"
                     component={MyChatsScreen}
@@ -309,7 +317,7 @@ export const MainScreen = ({route, navigation}: Props) => {
                     }}
 
                 />}
-                {<Tab.Screen
+                {auth().currentUser !== null && <Tab.Screen
                     name="CabinetScreen"
                     component={CabinetScreen}
                     options={{

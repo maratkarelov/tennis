@@ -132,7 +132,7 @@ export default StyleSheet.create({
         marginLeft: 10,
         fontSize: 16,
         lineHeight: 20,
-        color: baseColor.sky,
+        color: baseColor.primary,
     },
 
 });

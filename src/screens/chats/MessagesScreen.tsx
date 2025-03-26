@@ -145,14 +145,14 @@ export const MessagesScreen = ({route, navigation}: Props) => {
                 marginVertical: 6,
                 padding: 10,
                 marginHorizontal: 10,
-                backgroundColor: route.params?.user?.ref?.id === item.authorRef.id ? baseColor.white : baseColor.sky_light,
+                backgroundColor: route.params?.user?.ref?.id === item.authorRef.id ? baseColor.white : baseColor.primary_light,
                 borderRadius: 10,
             }]}>
                 <Text style={{color: baseColor.black, fontSize: 18}}>{item.text}</Text>
                 <View style={{alignItems: 'center', justifyContent: 'flex-end', flexDirection: 'row'}}>
                     {item.userRef.id !== corrId && lastReadDate?.seconds >= item.date.seconds && <MaterialCommunityIcons
                         size={24}
-                        color={baseColor.sky}
+                        color={baseColor.primary}
                         name={'check-all'}
                     />}
                     <Text style={{color: baseColor.gray_hint, textAlign: 'right', marginLeft: 10}}>{dateStrFull}</Text>
@@ -193,7 +193,7 @@ export const MessagesScreen = ({route, navigation}: Props) => {
                     <MaterialCommunityIcons
                         name={'send'}
                         size={30}
-                        color={message ? baseColor.sky : baseColor.light_gray_2}/>
+                        color={message ? baseColor.primary : baseColor.light_gray_2}/>
                 </TouchableOpacity>}
             </View>}
             {keyboardStatus && Platform.OS === 'ios' && <View style={{height: '50%'}}/>}

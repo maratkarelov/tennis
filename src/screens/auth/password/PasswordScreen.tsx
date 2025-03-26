@@ -176,7 +176,7 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                                 isLoading={loading}
                                 onPress={formik.handleSubmit}
                                 title={I18n.t('auth.sign_in')}
-                                backgroundColor={baseColor.sky}
+                                backgroundColor={baseColor.primary}
                                 textColor={baseColor.white}
                             />
                         </View>

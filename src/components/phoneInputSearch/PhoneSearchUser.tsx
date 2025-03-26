@@ -162,7 +162,7 @@ export const PhoneSearchUser = ({navigation, foundPhoneCallback, nextInputRef}) 
                 padding: 6,
                 marginLeft: 20,
                 borderRadius: 10,
-                backgroundColor: baseColor.sky,
+                backgroundColor: baseColor.primary,
             }}
             onPress={() => {
                 openChats();
@@ -297,7 +297,7 @@ export const PhoneSearchUser = ({navigation, foundPhoneCallback, nextInputRef}) 
                 onPress={() => {
                     setSelectedCityUser(user);
                 }}
-                style={[Styles.foundPhone, {borderColor: selectedCityUser?.ref?.id === user?.ref?.id ? baseColor.sky : baseColor.white}]}>
+                style={[Styles.foundPhone, {borderColor: selectedCityUser?.ref?.id === user?.ref?.id ? baseColor.primary : baseColor.white}]}>
                 {user?.photoUrl && <Image style={Styles.avatar} source={{uri: user?.photoUrl}}/>}
                 <View>
                     {lastBlackListRecord && renderBlackListIcon(user.phone)}
@@ -341,7 +341,7 @@ export const PhoneSearchUser = ({navigation, foundPhoneCallback, nextInputRef}) 
                         padding: 6,
                         marginLeft: 20,
                         borderRadius: 10,
-                        backgroundColor: externalUserName ? baseColor.sky : baseColor.light_gray,
+                        backgroundColor: externalUserName ? baseColor.primary : baseColor.light_gray,
                     }}
                     onPress={() => {
                         if (externalUserName) {

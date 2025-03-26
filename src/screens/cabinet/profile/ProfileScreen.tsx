@@ -410,7 +410,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                         style={[Styles.row, {padding: 10, marginTop: 20, alignItems: 'center'}]}>
                         <MaterialCommunityIcons
                             size={40}
-                            color={baseColor.sky}
+                            color={baseColor.primary}
                             name={'car-multiple'}
                         />
                         <Text style={{color: baseColor.gray_middle, fontSize: 16}}>{I18n.t('vehicle.label')}</Text>
@@ -422,7 +422,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                         style={[Styles.row, {padding: 10, marginTop: 20, alignItems: 'center'}]}>
                         <MaterialCommunityIcons
                             size={40}
-                            color={baseColor.sky}
+                            color={baseColor.primary}
                             name={'phone'}
                         />
                         <Text style={{

@@ -8,6 +8,6 @@ export default StyleSheet.create({
     },
     place: {
         padding:10,
-        color:baseColor.sky,
+        color:baseColor.secondary,
     },
  });

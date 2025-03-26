@@ -60,7 +60,7 @@ export default StyleSheet.create({
   },
   occupancyText:{
     marginTop:20,
-    color:baseColor.sky,
+    color:baseColor.primary,
     fontSize:16,
 
   },
@@ -84,15 +84,15 @@ export default StyleSheet.create({
   },
   monthItemText: {
     fontSize: 16,
-    color: baseColor.sky,
+    color: baseColor.primary,
   },
   monthText: {
     fontSize: 16,
     paddingHorizontal: 20,
-    color: baseColor.sky,
+    color: baseColor.primary,
   },
   open_support_chat:{
-    color:baseColor.sky,
+    color:baseColor.primary,
     textAlign:'center',
     marginLeft:20
   }

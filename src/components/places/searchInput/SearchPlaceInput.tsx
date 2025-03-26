@@ -81,7 +81,7 @@ const SearchPlaceInput = ({editable, setPlace, place}) => {
                     top: 40,
                     fontSize: 18,
                     padding: 10,
-                    backgroundColor: baseColor.sky_light,
+                    backgroundColor: baseColor.primary_light,
                     width: 300
                 }}>
                     {foundPlaces.map((value, key) => {

@@ -36,8 +36,8 @@ export default function ActionButton(props: {
         Styles.button,
         {
           backgroundColor: props.disable
-            ? disableColor(props.backgroundColor ?? baseColor.sky)
-            : props.backgroundColor ?? baseColor.sky,
+            ? disableColor(props.backgroundColor ?? baseColor.primary)
+            : props.backgroundColor ?? baseColor.primary,
         },
       ]}
       onPress={onPress}

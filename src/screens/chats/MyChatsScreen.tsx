@@ -56,7 +56,7 @@ export const MyChatsScreen = ({navigation, route}: Props) => {
                         style={{padding: 10}}
                     >
                             <Text style={{
-                                color: baseColor.sky,
+                                color: baseColor.primary,
                                 marginRight: 8,
                                 textAlign: 'right',
                             }}>{I18n.t('mark_as_read')}</Text>

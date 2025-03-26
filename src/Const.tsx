@@ -1,4 +1,5 @@
 export const TABLES = {
+    LOCATIONS: 'locations',
     TRIPS: 'trips',
     BOOKINGS: 'booking',
     USERS: 'users',
@@ -21,6 +22,8 @@ export const TABLES = {
 };
 
 export const FIELDS = {
+    PLACE_REF: 'placeRef',
+    SPORT_REF: 'sportRef',
     USER_UID: 'uid',
     AUTHOR_REF: 'authorRef',
     USER_REF: 'userRef',
@@ -98,6 +101,8 @@ export const SUPPORT_REGIONS = 'support_regions';
 
 
 export const STORAGE_KEYS = {
+    place: 'place',
+    sport: 'sport',
     drivers: 'drivers',
     passengers: 'passengers',
     places: 'places',

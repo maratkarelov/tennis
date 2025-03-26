@@ -63,14 +63,14 @@ export const ChatItem = ({uid, readUserCallback, foundUser, chat, navigation}) =
                         <View style={{alignItems: 'flex-end'}}>
                             <Text style={{color: baseColor.gray_hint}}>{dateStrFull}</Text>
                             {chat.userRef.id === uid && chat.countUnread > 0 && <Text style={{
-                                color: baseColor.sky,
+                                color: baseColor.primary,
                                 fontWeight: '600',
                                 fontSize: 16,
                                 textAlign: 'right',
                             }}>Новых {chat.countUnread}</Text>}
                             {chat.userRef.id !== uid && chat.countUnread === 0 && <MaterialCommunityIcons
                                 size={24}
-                                color={baseColor.sky}
+                                color={baseColor.primary}
                                 name={'check-all'}
                             ></MaterialCommunityIcons>}
                         </View>
