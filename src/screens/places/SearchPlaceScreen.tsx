@@ -6,6 +6,8 @@ import StylesGlobal from '../../theme/styles';
 import Styles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {baseColor} from '../../theme/appTheme';
+import {BaseLayout} from "../../components/base/BaseLayout";
+import I18n from "../../locales/i18n";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -15,7 +17,6 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
     const [regionCollection, setRegionCollection] = useState();
     useEffect(() => {
         navigation.setOptions({
-            headerShown: false,
             headerBackTitle: ' ',
             title: ' ',
         });
@@ -29,17 +30,16 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
                             setRegionCollection(undefined);
                         } else if (countryCollection) {
                             setCountryCollection(undefined);
-                        } else {
-                            navigation.goBack();
                         }
                     }}
                     style={[StylesGlobal.row, Styles.root]}>
                     <MaterialCommunityIcons
                         size={40}
-                        color={countryCollection || regionCollection ? baseColor.secondary : baseColor.black}
-                        name={countryCollection || regionCollection ? 'folder-open-outline' : 'chevron-left'}
+                        color={countryCollection ? baseColor.secondary : baseColor.transparent}
+                        name={'folder-open-outline'}
                     />
-                    <Text style={Styles.rootText}>{regionCollection?.name ?? countryCollection?.name}</Text>
+                    <Text
+                        style={[Styles.rootText, {color: countryCollection ? baseColor.secondary : baseColor.gray_middle}]}>{regionCollection?.name ?? countryCollection?.name ?? I18n.t('expand_select_places')}</Text>
 
                 </TouchableOpacity>
                 <PlacesList

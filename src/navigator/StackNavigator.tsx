@@ -12,6 +12,11 @@ import {EmailScreen} from '../screens/auth/email/EmailScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MainScreen} from '../screens/main/MainScreen';
 import SearchPlaceScreen from "../screens/places/SearchPlaceScreen";
+import {ClassesScreen} from "../screens/sports/ClassesScreen";
+import {LocationScheduleScreen} from "../screens/locations/schedule/LocationScheduleScreen";
+import {MyClassBookingScreen} from "../screens/booking/details/MyClassBookingScreen";
+import ProfileScreen from "../screens/cabinet/profile/ProfileScreen";
+import UserDetailsScreen from "../screens/user/details/UserDetailsScreen";
 
 export type RootStackParams = {
     StartScreen: undefined;
@@ -39,6 +44,7 @@ export type RootStackParams = {
     QuizTrackReactionsScreen: undefined;
     QuizMemberScreen: undefined;
     QuizMemberTracksScreen: undefined;
+    LocationScheduleScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -76,15 +82,17 @@ export const StackNavigator = () => {
                 {/*<Stack.Screen name="SearchResultsScreen" component={SearchResultsScreen}/>*/}
                 {/*<Stack.Screen name="TripDetailScreen" component={TripDetailScreen}/>*/}
                 {/*<Stack.Screen name="BookingsScreen" component={BookingsScreen}/>*/}
-                {/*<Stack.Screen name="BookExternalPhoneScreen" component={BookExternalPhoneScreen}/>*/}
+                <Stack.Screen name="LocationScheduleScreen" component={LocationScheduleScreen}/>
+                <Stack.Screen name="MyClassBookingScreen" component={MyClassBookingScreen}/>
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}
                 <Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>
-                {/*<Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen}/>*/}
+                <Stack.Screen name="ClassesScreen" component={ClassesScreen}/>
+                <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen}/>
                 <Stack.Screen name="ChatsScreen" component={ChatsScreen}/>
                 {/*<Stack.Screen name="MessagesScreen" component={MessagesScreen}/>*/}
                 {/*<Stack.Screen name="UserSearchScreen" component={UserSearchScreen}/>*/}
                 <Stack.Screen name="CabinetScreen" component={CabinetScreen}/>
-                {/*<Stack.Screen name="ProfileScreen" component={ProfileScreen}/>*/}
+                <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
                 {/*<Stack.Screen name="FilterRoutesScreen" component={FilterRoutesScreen}/>*/}
                 {/*<Stack.Screen name="MyBookingDetail" component={MyBookingDetail}/>*/}
                 {/*<Stack.Screen name="ReviewsScreen" component={ReviewsScreen}/>*/}

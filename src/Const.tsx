@@ -1,5 +1,8 @@
 export const TABLES = {
     LOCATIONS: 'locations',
+    SCHEDULE: 'schedule',
+    CLASS_BOOKINGS: 'class_bookings',
+    SPORTS: 'sports',
     TRIPS: 'trips',
     BOOKINGS: 'booking',
     USERS: 'users',
@@ -22,8 +25,12 @@ export const TABLES = {
 };
 
 export const FIELDS = {
+    LOCATION_REF: 'locationRef',
+    COUNTRY_REF: 'countryRef',
+    REGION_REF: 'regionRef',
     PLACE_REF: 'placeRef',
-    SPORT_REF: 'sportRef',
+    SPORTS_REF: 'sportRefs',
+    SCHEDULE_REF: 'scheduleRef',
     USER_UID: 'uid',
     AUTHOR_REF: 'authorRef',
     USER_REF: 'userRef',

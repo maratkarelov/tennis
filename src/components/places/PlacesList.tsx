@@ -7,6 +7,7 @@ import Styles from './styles';
 import StylesGlobal from '../../theme/styles';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {baseColor} from "../../theme/appTheme";
+import {BaseLayout} from "../base/BaseLayout";
 
 type PlacesListProps = {
     selectedPlaceCallback: any,
@@ -14,6 +15,7 @@ type PlacesListProps = {
     selectedCollection?: { ref: any };
 };
 export const PlacesList = (props: PlacesListProps) => {
+    const [isLoading, setLoading] = useState(false);
     const [selectedCollection, setSelectedCollection] = useState(props.selectedCollection);
     const [places, setPlaces] = useState();
     // console.log('selectedCollection', selectedCollection)
@@ -23,6 +25,7 @@ export const PlacesList = (props: PlacesListProps) => {
         setSelectedCollection(props.selectedCollection);
     }, [props.selectedCollection]);
     useEffect(() => {
+        setLoading(true)
         const collection = selectedCollection ? selectedCollection.ref.collection(TABLES.ITEMS) : firestore().collection(TABLES.PLACES);
         collection.get()
             .then(qs => {
@@ -32,13 +35,14 @@ export const PlacesList = (props: PlacesListProps) => {
                 });
                 const sortedList = list.sort(generateSortFn([{name: FIELDS.SORT}, {name: FIELDS.NAME}]));
                 setPlaces(sortedList);
+                setLoading(false)
             })
             .catch(r => {
                 console.log(r)
             });
     }, [selectedCollection]);
 
-    const flatListRef = useRef();
+    const flatListRef = useRef<FlatList>(FlatList);
     useEffect(() => {
         flatListRef?.current?.scrollToOffset({animated: true, offset: 0});
     }, [places]);
@@ -46,7 +50,7 @@ export const PlacesList = (props: PlacesListProps) => {
     function renderPlace(item) {
         return (
             <TouchableOpacity
-                style={[StylesGlobal.rowSpace, StylesGlobal.whiteBordered]}
+                style={[StylesGlobal.rowSpace, StylesGlobal.whiteBordered, {marginTop:10}]}
                 onPress={() => {
                     console.log('item', item)
                     props.selectedPlaceCallback(item);
@@ -71,12 +75,18 @@ export const PlacesList = (props: PlacesListProps) => {
             </TouchableOpacity>);
     }
 
-    return <FlatList
-        style={{marginHorizontal: 10, marginTop: 20}}
+    return (
+        <BaseLayout
+            isLoading={isLoading}
+        >
+            <FlatList
+                style={{marginHorizontal: 10, marginTop: 20}}
 
-        ref={flatListRef}
-        data={places}
-        renderItem={item => renderPlace(item.item)}/>;
+                ref={flatListRef}
+                data={places}
+                renderItem={item => renderPlace(item.item)}/>
+        </BaseLayout>
+    );
 
 };
 

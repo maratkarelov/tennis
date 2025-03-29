@@ -91,12 +91,11 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                     // console.log('userCred.user.uid', userCred.user.uid);
                     const userRef = firestore().collection(TABLES.USERS).doc(userCred.user.uid);
                     const data = {
-                        reference: userRef,
                         os: Platform.OS,
                         name: userCred.user.displayName,
                         email: userCred.user.email,
                         dateRegistration: new Date(),
-                        countryCode: countryCode ?? 'ru',
+                        countryCode: countryCode,
                         invitedby: invitedby,
                     };
                     userRef.set(data)

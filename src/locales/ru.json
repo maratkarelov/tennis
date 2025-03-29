@@ -26,13 +26,17 @@
   "to": "Куда",
   "auto_confirm": "Автоматическое\nбронирование",
   "another_phone": "Другой номер пассажира",
-  "to_book": "Забронировать",
+  "to_book": "Записаться",
   "booking": "Бронь",
   "waiting": "Ожидание",
   "cancelled_by_passenger": "Отмена\nпассажиром",
   "cancelled_by_driver": "Отмена\nводителем",
   "rejected_by_passenger": "Отклонен\nпассажиром",
   "rejected_by_driver": "Отклонен\nводителем",
+  "cancelled_by_member": "Отмена учеником",
+  "cancelled_by_coach": "Отмена\nтренером",
+  "rejected_by_member": "Отклонен\nучеником",
+  "rejected_by_coach": "Отклонен\nтренером",
   "add_another_phone_to_user": "Добавить телефон к пассажиру",
   "add_another_phone_to_black_list": "а также в черный список",
   "add_info_to_black_list": "Внести информацию в черный список",
@@ -174,7 +178,10 @@
     "regNumber": "рег. номер",
     "region": "регион"
   },
-  "tennis": "Теннис",
-  "select": "Выбрать"
+  "select_class": "Выберите занятие",
+  "members": "Участники",
+  "class": "Занятие",
+  "minutes": "минут",
+  "expand_select_places": "Выберите или раскройте"
 }
 

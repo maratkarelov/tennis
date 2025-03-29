@@ -5,7 +5,8 @@ import I18n from '../../locales/i18n';
 import {BackHandler, Linking, PermissionsAndroid, Platform} from 'react-native';
 import {BaseLayout} from '../../components/base/BaseLayout';
 import {
-    ANDROID_CHANNELS, APP_MODE,
+    ANDROID_CHANNELS,
+    APP_MODE,
     DATE_FORMATTERS,
     FIELDS,
     LAST_REVIEW_PROMPT,
@@ -29,9 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import {baseColor} from "../../theme/appTheme";
-import {SearchScreen} from "../schedules/search/SearchScreen";
-import CalendarScreen from "../schedules/calendar/CalendarScreen";
-import {LocationsScreen} from "../locations/LocationsScreen";
+import {ClassesLocationsScreen} from "../locations/ClassesLocationsScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -263,39 +262,25 @@ export const MainScreen = ({route, navigation}: Props) => {
                     });
                     setUnreviewedDriver(undefined);
                     setUnreviewedTripRef(undefined);
-
                 }
                 setConfirm(undefined);
                 setConfirmYes(undefined);
                 setConfirmNo(undefined);
             }}>
-            <Tab.Navigator initialRouteName={'CabinetScreen'}
-                           screenOptions={{
-                               tabBarActiveTintColor: baseColor.green,
-                           }}
+            <Tab.Navigator
+                initialRouteName={'ClassesLocationsScreen'}
+                screenOptions={{
+                    tabBarActiveTintColor: baseColor.green,
+                }}
             >
-                {<Tab.Screen
-                    name="LocationsScreen"
-                    component={LocationsScreen}
+                <Tab.Screen
+                    name="ClassesLocationsScreen"
+                    component={ClassesLocationsScreen}
                     options={{
                         tabBarLabel: I18n.t('search'),
                         tabBarIcon: ({color}) => (
                             <MaterialCommunityIcons
                                 name="map-search-outline"
-                                color={color}
-                                size={22}
-                            />
-                        ),
-                    }}
-                />}
-                <Tab.Screen
-                    name="CalendarScreen"
-                    component={CalendarScreen}
-                    options={{
-                        tabBarLabel: I18n.t(appMode === APP_MODE.SEARCH ? 'my_trips' : 'schedule'),
-                        tabBarIcon: ({color}) => (
-                            <MaterialCommunityIcons
-                                name={appMode === APP_MODE.SEARCH ? 'calendar' : 'clipboard-clock-outline'}
                                 color={color}
                                 size={22}
                             />

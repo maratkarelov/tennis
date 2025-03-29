@@ -10,8 +10,6 @@ export default StyleSheet.create({
         borderRadius: 10,
     },
     selectorText: {
-        marginHorizontal:10,
-        textAlign: 'center',
         color: baseColor.primary,
         fontSize: 18,
         fontWeight: '600',

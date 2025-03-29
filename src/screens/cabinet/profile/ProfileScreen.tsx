@@ -41,6 +41,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
     const [supportUser, setSupportUser] = useState(false);
     const firestoreContext = useContext(FirestoreContext);
     const isFocused = useIsFocused();
+    console.log('user',user)
 
     //================================================
     // functions
@@ -62,6 +63,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
         const blob = await response.blob();
         const storageRef = storage().ref();
         const upload = storageRef.child(TABLES.USERS).child(user.ref.id + '.jpg');
+        console.log('upload',upload)
         await upload.put(blob);
         await upload.getDownloadURL()
             .then((photoUrl) => {
@@ -73,7 +75,9 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                 user.ref
                     .update({photoUrl: photoUrl})
                     .then();
-            });
+            })
+            .catch(reason => {
+                console.log(reason)});
     };
 
     const deleteAccount = () => {
@@ -274,90 +278,6 @@ export const ProfileScreen = ({navigation, route}: Props) => {
         );
     };
 
-
-    const verifyBookedPassengers = () => {
-        const startDay = new Date();
-        startDay.setFullYear(2024);
-        startDay.setMonth(8);
-        startDay.setDate(1);
-        startDay.setHours(0);
-        startDay.setMinutes(0);
-        startDay.setSeconds(0);
-        startDay.setMilliseconds(0);
-        const endDay = new Date();
-        endDay.setMonth(0);
-        endDay.setDate(31);
-        endDay.setHours(23);
-        endDay.setMinutes(59);
-        endDay.setSeconds(59);
-        endDay.setMilliseconds(999);
-        console.log('startDay', startDay.toISOString());
-        console.log('endDay', endDay.toISOString());
-        firestore().collection(TABLES.BOOKINGS)
-            .where(FIELDS.DATE_DEPARTURE, '>=', startDay)
-            .where(FIELDS.DATE_DEPARTURE, '<=', endDay)
-            .where(FIELDS.STATUS, '==', STATUS.ACTIVE_BOOKING)
-            .get()
-            .then(async qs => {
-                console.log('qs', qs.size);
-                const bookings = qs.docs.map(qds => qds.data());
-                let c = 0;
-                for (const booking of bookings) {
-                    c++;
-                    console.log('passenger', c);
-                    if (booking.passengerRef.id !== '_external') {
-                        const passenger = (await booking.passengerRef.get()).data();
-                        console.log('passenger', passenger.phone);
-                        if (!passenger.verified && passenger.phone && !passenger.blocked) {
-                            booking.passengerRef.update({verified: true});
-                            console.log('❗passenger UPDATE', passenger.phone);
-                        }
-                    }
-                }
-            })
-            .catch(reason => {
-                console.log(reason);
-            });
-
-    };
-
-    const replaceExternalPhone = () => {
-        firestore().collection(TABLES.EXTERNAL_PHONES)
-            .get()
-            .then(qs => {
-                const externalPhones = qs.docs.map(qds => {
-                        return {ref: qds.ref, ...qds.data()};
-                    }
-                );
-                console.log('externalPhones', externalPhones.length);
-                let c = 0;
-                for (const externalPhone of externalPhones) {
-                    c++;
-                    console.log(c);
-                    if (externalPhone.phone.substring(0, 2) === '+7') {
-                        firestore().collection(TABLES.USERS)
-                            .where(FIELDS.PHONE, '==', externalPhone.phone)
-                            .get()
-                            .then(qsUsers => {
-                                if (qsUsers.size > 0) {
-                                    // console.log('qsUsers', qsUsers.size);
-                                    // console.log(externalPhone?.ref.id, externalPhone?.phone);
-                                    const internalFormatPhone = externalPhone?.phone.replace('+7', '8');
-                                    externalPhone?.ref.update({phone: internalFormatPhone});
-                                }
-                            })
-                            .catch(reason => {
-                                console.log(reason);
-                            });
-                    }
-                }
-            })
-            .catch(reason => {
-                console.log(reason);
-            });
-
-    };
-
     return (
         <BaseLayout
             isLoading={isLoading}
@@ -415,26 +335,6 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                         />
                         <Text style={{color: baseColor.gray_middle, fontSize: 16}}>{I18n.t('vehicle.label')}</Text>
                     </TouchableOpacity>
-                    {user?.ref.id === 'Ym9536ScDhVI1jnDC1ej3YqxQ6Q2' && <TouchableOpacity
-                        onPress={() => {
-                            replaceExternalPhone();
-                        }}
-                        style={[Styles.row, {padding: 10, marginTop: 20, alignItems: 'center'}]}>
-                        <MaterialCommunityIcons
-                            size={40}
-                            color={baseColor.primary}
-                            name={'phone'}
-                        />
-                        <Text style={{
-                            color: baseColor.gray_middle,
-                            fontSize: 16,
-                        }}>{I18n.t('profile.replace_external_phones')}</Text>
-                    </TouchableOpacity>}
-                    <View style={{marginTop: 20}}>
-                        {firestoreContext.getCityUser()?.trustedDriver &&
-                            <BookingsPieChart uid={auth().currentUser?.uid}/>}
-
-                    </View>
                 </View>
             </ScrollView>
 

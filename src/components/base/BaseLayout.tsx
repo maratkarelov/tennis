@@ -3,6 +3,7 @@ import Styles from './styles';
 import React from 'react';
 import I18n from '../../locales/i18n';
 import LoadingSpinner from '../LoadingSpinner';
+import {baseColor} from "../../theme/appTheme";
 
 export const BaseLayout = ({
                                children,

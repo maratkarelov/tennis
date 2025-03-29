@@ -3,7 +3,7 @@ import {baseColor} from "./appTheme";
 
 export default StyleSheet.create({
     whiteBordered: {
-        padding:10,
+        padding: 10,
         backgroundColor: baseColor.white,
         borderRadius: 10,
         borderColor: baseColor.light_gray_2,
@@ -23,4 +23,8 @@ export default StyleSheet.create({
         height: 65,
         borderRadius: 20,
     },
+    text: {color: baseColor.black, fontSize: 16},
+    textHint: {color: baseColor.gray_hint, fontSize: 16},
+    textGray: {color: baseColor.gray_middle, fontSize: 16},
+    textSecondary: {color: baseColor.secondary, fontSize: 16},
 });
