@@ -1,4 +1,4 @@
-import {FlatList, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import Styles from './styles';
 import StylesGlobal from '../../theme/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -89,7 +89,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={[StylesGlobal.container, {  paddingTop: Platform.OS === 'android' ? 50 : 0}]}>
             <View style={[StylesGlobal.rowSpace, {margin: 10, height: 60}]}>
                 <TouchableOpacity
                     onPress={() => {

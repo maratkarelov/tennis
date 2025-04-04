@@ -179,9 +179,15 @@
     "region": "регион"
   },
   "select_class": "Выберите занятие",
+  "select_location": "Выберите локацию",
   "members": "Участники",
   "class": "Занятие",
   "minutes": "минут",
-  "expand_select_places": "Выберите или раскройте"
+  "expand_select_places": "Выберите или раскройте",
+  "my_calendar": "Мои занятия",
+  "location": "Локация",
+  "new_schedule": "Новое занятие",
+  "copy_schedule": "Копирование занятия",
+  "duration": "Длительность",
 }
 

@@ -8,7 +8,6 @@ export default StyleSheet.create({
     borderRadius: 8,
   },
   text: {
-    paddingVertical: 4,
     paddingHorizontal: 10,
     fontSize: 16,
     letterSpacing: 1,

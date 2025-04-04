@@ -31,6 +31,7 @@ import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import {baseColor} from "../../theme/appTheme";
 import {ClassesLocationsScreen} from "../locations/ClassesLocationsScreen";
+import {MyCalendarScreen} from "../myschedule/MyCalendarScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -281,6 +282,20 @@ export const MainScreen = ({route, navigation}: Props) => {
                         tabBarIcon: ({color}) => (
                             <MaterialCommunityIcons
                                 name="map-search-outline"
+                                color={color}
+                                size={22}
+                            />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="MyCalendarScreen"
+                    component={MyCalendarScreen}
+                    options={{
+                        tabBarLabel: I18n.t('my_calendar'),
+                        tabBarIcon: ({color}) => (
+                            <MaterialCommunityIcons
+                                name="calendar"
                                 color={color}
                                 size={22}
                             />

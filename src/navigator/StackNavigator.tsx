@@ -11,12 +11,14 @@ import {CabinetScreen} from '../screens/cabinet/CabinetScreen';
 import {EmailScreen} from '../screens/auth/email/EmailScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MainScreen} from '../screens/main/MainScreen';
-import SearchPlaceScreen from "../screens/places/SearchPlaceScreen";
-import {ClassesScreen} from "../screens/sports/ClassesScreen";
-import {LocationScheduleScreen} from "../screens/locations/schedule/LocationScheduleScreen";
-import {MyClassBookingScreen} from "../screens/booking/details/MyClassBookingScreen";
-import ProfileScreen from "../screens/cabinet/profile/ProfileScreen";
-import UserDetailsScreen from "../screens/user/details/UserDetailsScreen";
+import SearchPlaceScreen from '../screens/places/SearchPlaceScreen';
+import {ClassesScreen} from '../screens/sports/ClassesScreen';
+import {LocationScheduleScreen} from '../screens/locations/schedule/LocationScheduleScreen';
+import {MyClassBookingScreen} from '../screens/booking/details/MyClassBookingScreen';
+import ProfileScreen from '../screens/cabinet/profile/ProfileScreen';
+import UserDetailsScreen from '../screens/user/details/UserDetailsScreen';
+import {ScheduleDetailsScreen} from '../screens/training/ScheduleDetailsScreen';
+import {CoachLocationsScreen} from "../screens/locations/CoachLocationsScreen";
 
 export type RootStackParams = {
     StartScreen: undefined;
@@ -44,7 +46,9 @@ export type RootStackParams = {
     QuizTrackReactionsScreen: undefined;
     QuizMemberScreen: undefined;
     QuizMemberTracksScreen: undefined;
+
     LocationScheduleScreen: undefined;
+    ScheduleDetailsScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -80,8 +84,9 @@ export const StackNavigator = () => {
                 />
                 {/*<Stack.Screen name="SearchScreen" component={SearchScreen}/>*/}
                 {/*<Stack.Screen name="SearchResultsScreen" component={SearchResultsScreen}/>*/}
-                {/*<Stack.Screen name="TripDetailScreen" component={TripDetailScreen}/>*/}
+                <Stack.Screen name="ScheduleDetailsScreen" component={ScheduleDetailsScreen}/>
                 {/*<Stack.Screen name="BookingsScreen" component={BookingsScreen}/>*/}
+                <Stack.Screen name="CoachLocationsScreen" component={CoachLocationsScreen}/>
                 <Stack.Screen name="LocationScheduleScreen" component={LocationScheduleScreen}/>
                 <Stack.Screen name="MyClassBookingScreen" component={MyClassBookingScreen}/>
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}

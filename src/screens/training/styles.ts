@@ -1,57 +1,7 @@
 import {StyleSheet} from 'react-native';
-import {baseColor} from "./appTheme";
+import {baseColor} from "../../theme/appTheme";
 
 export default StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-        backgroundColor:baseColor.yellow_10,
-    },
-    whiteBordered: {
-        padding: 10,
-        backgroundColor: baseColor.white,
-        borderRadius: 10,
-        borderColor: baseColor.light_gray_2,
-        borderWidth: 1,
-    },
-    flex_between: {
-        flex:1,
-    },
-    row: {
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    rowSpace: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    avatar: {
-        width: 65,
-        height: 65,
-        borderRadius: 20,
-    },
-    text: {color: baseColor.black, fontSize: 16},
-    textHint: {color: baseColor.gray_hint, fontSize: 16},
-    textGray: {color: baseColor.gray_middle, fontSize: 16},
-    textSecondary: {color: baseColor.secondary, fontSize: 16},
-    addTask: {
-        alignContent: 'center',
-        width: 40,
-        height: 40,
-        position: 'absolute',
-        bottom: 20,
-        right: 20,
-        borderRadius: 20,
-        backgroundColor: baseColor.sky,
-        shadowColor: baseColor.black,
-        shadowOpacity: 0.8,
-        shadowRadius: 5,
-        shadowOffset: {
-            height: 1,
-            width: 0,
-        },
-    },
     input: {
         backgroundColor: baseColor.white,
         paddingHorizontal: 10,
@@ -61,7 +11,7 @@ export default StyleSheet.create({
         borderRadius: 10,
     },
     inputText: {
-        fontSize: 16,
+        fontSize: 18,
         textAlign: 'center',
         paddingVertical: 0,
         color: baseColor.blue
@@ -75,7 +25,7 @@ export default StyleSheet.create({
         color: baseColor.gray,
         paddingHorizontal: 10,
         paddingVertical: 10,
-        marginTop: 0,
+        marginTop: 10,
         backgroundColor: baseColor.white,
         borderRadius: 10,
         borderWidth: 1,
