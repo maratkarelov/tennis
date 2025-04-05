@@ -95,7 +95,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
                     onPress={() => {
                         handleOpenSport();
                     }}
-                    style={[StylesGlobal.rowSpace, Styles.selector, {flex: 0.5, height: 60, marginRight: 10}]}>
+                    style={[StylesGlobal.rowSpace, Styles.selector, {flex: 0.5, height: 60, marginRight: 10, alignItems:'center'}]}>
                     <Text
                         maxFontSizeMultiplier={1}
                         numberOfLines={2}
@@ -124,6 +124,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
                         marginLeft: 10,
                         flex: 0.5,
                         height: 60,
+                        alignItems:'center'
                     }]}>
                     <MaterialCommunityIcons
                         size={24}
