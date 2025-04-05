@@ -34,7 +34,7 @@ export const FIELDS = {
     USER_UID: 'uid',
     AUTHOR_REF: 'authorRef',
     USER_REF: 'userRef',
-    DRIVER_REF: 'driverRef',
+    COACH_REF: 'coachRef',
     PASSENGER_REF: 'passengerRef',
     DATE_DEPARTURE: 'dateDeparture',
     DATE_ARRIVAL: 'dateArrival',

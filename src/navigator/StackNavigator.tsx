@@ -14,7 +14,7 @@ import {MainScreen} from '../screens/main/MainScreen';
 import SearchPlaceScreen from '../screens/places/SearchPlaceScreen';
 import {ClassesScreen} from '../screens/sports/ClassesScreen';
 import {LocationScheduleScreen} from '../screens/locations/schedule/LocationScheduleScreen';
-import {MyClassBookingScreen} from '../screens/booking/details/MyClassBookingScreen';
+import {MyBookingScreen} from '../screens/booking/MyBookingScreen';
 import ProfileScreen from '../screens/cabinet/profile/ProfileScreen';
 import UserDetailsScreen from '../screens/user/details/UserDetailsScreen';
 import {ScheduleDetailsScreen} from '../screens/training/ScheduleDetailsScreen';
@@ -88,7 +88,7 @@ export const StackNavigator = () => {
                 {/*<Stack.Screen name="BookingsScreen" component={BookingsScreen}/>*/}
                 <Stack.Screen name="CoachLocationsScreen" component={CoachLocationsScreen}/>
                 <Stack.Screen name="LocationScheduleScreen" component={LocationScheduleScreen}/>
-                <Stack.Screen name="MyClassBookingScreen" component={MyClassBookingScreen}/>
+                <Stack.Screen name="MyBookingScreen" component={MyBookingScreen}/>
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}
                 <Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>
                 <Stack.Screen name="ClassesScreen" component={ClassesScreen}/>

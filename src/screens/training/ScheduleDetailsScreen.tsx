@@ -72,8 +72,6 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 trip: route.params?.trip,
                 dateStrFull: route.params?.dateStrFull,
                 route: route.params?.route,
-                futureBookings: route.params?.futureBookings,
-                futureUsers: route.params?.futureUsers,
 
             });
         }

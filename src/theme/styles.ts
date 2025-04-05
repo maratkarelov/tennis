@@ -18,11 +18,9 @@ export default StyleSheet.create({
         flex:1,
     },
     row: {
-        alignItems: 'center',
         flexDirection: 'row',
     },
     rowSpace: {
-        alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },

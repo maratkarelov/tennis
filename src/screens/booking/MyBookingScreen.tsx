@@ -1,23 +1,23 @@
-import {BaseLayout} from '../../../components/base/BaseLayout';
+import {BaseLayout} from '../../components/base/BaseLayout';
 import {StackScreenProps} from '@react-navigation/stack/lib/typescript/module/src';
 import {useContext, useEffect, useState} from 'react';
 import moment from 'moment';
 import 'moment/locale/ru';
-import StylesGlobal from '../../../theme/styles';
+import StylesGlobal from '../../theme/styles';
 import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
-import I18n from '../../../locales/i18n';
-import ActionButton from '../../../components/ActionButton';
-import {baseColor} from '../../../theme/appTheme';
-import LoadingSpinner from '../../../components/LoadingSpinner';
+import I18n from '../../locales/i18n';
+import ActionButton from '../../components/ActionButton';
+import {baseColor} from '../../theme/appTheme';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import firestore, {collection, getDocs, getFirestore, query} from '@react-native-firebase/firestore';
-import {FIELDS, STATUS, TABLES} from '../../../Const';
-import {FirestoreContext} from '../../../context/firestoreProvider';
-import {NoDataView} from "../../../components/noData/NoDataView";
+import {FIELDS, STATUS, TABLES} from '../../Const';
+import {FirestoreContext} from '../../context/firestoreProvider';
+import {NoDataView} from "../../components/noData/NoDataView";
 
 interface Props extends StackScreenProps<any, any> {
 }
 
-export const MyClassBookingScreen = ({route, navigation}: Props) => {
+export const MyBookingScreen = ({route, navigation}: Props) => {
     const firestoreContext = useContext(FirestoreContext);
     const [bookings, setBookings] = useState();
     const [members, setMembers] = useState();

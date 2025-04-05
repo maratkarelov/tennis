@@ -18,12 +18,13 @@ export const MyCalendarScreen = ({navigation}) => {
     const [selected, setSelected] = useState('');
     const [day, setDay] = useState(new Date().getDate());
     const [monthFirstDay, setMonthFirstDay] = useState();
+    const [coachSchedule, setCoachSchedule] = useState();
     const [memberBookings, setMemberBookings] = useState();
     const [coaches, setCoaches] = useState();
     const [locations, setLocations] = useState();
-    const [schedules, setSchedules] = useState();
+    const [memberSchedule, setMemberSchedule] = useState();
     const isFocused = useIsFocused();
-    const selectedDayTrips = memberBookings?.filter(item => {
+    const selectedDayTrips = (memberBookings ?? []).concat(coachSchedule ?? []).filter(item => {
         const date = new Date(item?.date?.seconds * 1000);
         return date.getDate() === day && date.getMonth() === monthFirstDay?.getMonth();
     });
@@ -34,15 +35,28 @@ export const MyCalendarScreen = ({navigation}) => {
 
     const readMemberSchedule = () => {
         const lastDay = new Date(monthFirstDay?.getFullYear(), monthFirstDay?.getMonth() + 1, 0, 23, 59, 59, 999);
-        console.log('readMemberSchedule', firestoreContext.getCityUser()?.ref.id, monthFirstDay.toString(), lastDay.toString());
-        let q = query(collection(getFirestore(), TABLES.CLASS_BOOKINGS));
-        q = q.where(FIELDS.USER_REF, '==', firestoreContext.getCityUser()?.ref);
-        q = q.where(FIELDS.DATE, '>=', monthFirstDay);
-        q = q.where(FIELDS.DATE, '<=', lastDay);
-        getDocs(q)
+        // console.log('readMemberSchedule', firestoreContext.getCityUser()?.ref.id, monthFirstDay.toString(), lastDay.toString());
+        let qMemberBookings = query(collection(getFirestore(), TABLES.CLASS_BOOKINGS));
+        qMemberBookings = qMemberBookings.where(FIELDS.USER_REF, '==', firestoreContext.getCityUser()?.ref);
+        qMemberBookings = qMemberBookings.where(FIELDS.DATE, '>=', monthFirstDay);
+        qMemberBookings = qMemberBookings.where(FIELDS.DATE, '<=', lastDay);
+        getDocs(qMemberBookings)
             .then(querySnapshot => {
-                console.log('querySnapshot', querySnapshot.size);
+                // console.log('querySnapshot', querySnapshot.size);
                 setMemberBookings(querySnapshot.docs.map(qds => {
+                    return {ref: qds.ref, ...qds.data()};
+                }));
+            })
+            .catch(reason => {
+                console.log(reason);
+            });
+        let qSchedule = query(collection(getFirestore(), TABLES.SCHEDULE));
+        qSchedule = qSchedule.where(FIELDS.COACH_REF, '==', firestoreContext.getCityUser()?.ref);
+        qSchedule = qSchedule.where(FIELDS.DATE, '>=', monthFirstDay);
+        qSchedule = qSchedule.where(FIELDS.DATE, '<=', lastDay);
+        getDocs(qSchedule)
+            .then(querySnapshot => {
+                setCoachSchedule(querySnapshot.docs.map(qds => {
                     return {ref: qds.ref, ...qds.data()};
                 }));
             })
@@ -53,6 +67,7 @@ export const MyCalendarScreen = ({navigation}) => {
 
     const onMonthChange = (value) => {
         setMemberBookings([]);
+        setCoachSchedule([]);
         setMonthFirstDay(new Date(value.year, value.month - 1, 1));
     };
 
@@ -94,7 +109,7 @@ export const MyCalendarScreen = ({navigation}) => {
             const schedule = (await scheduleRef.get()).data();
             list.push({ref: scheduleRef, ...schedule});
         }
-        setSchedules(list);
+        setMemberSchedule(list);
     }
 
     //================================================
@@ -136,36 +151,61 @@ export const MyCalendarScreen = ({navigation}) => {
     //================================================
     // render
     //================================================
-
-    const renderItem = ({item, index}) => {
-        const dateStr = moment(new Date(item.date.seconds * 1000)).format('HH:mm');
-        const location = locations?.find(c => c.ref.id === item.locationRef.id);
-        const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
-        const schedule = schedules?.find(c => c.ref.id === item.scheduleRef.id);
+    const renderItemCoach = (item) => {
+        console.log('item', item)
+        const schedule = coachSchedule?.find(c => c.ref.id === item.ref.id);
+        const dateStr = moment(new Date(schedule.date.seconds * 1000)).format('HH:mm');
+        const location = locations?.find(c => c.ref.id === schedule.locationRef.id);
         return (
             <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate('MyClassBookingScreen', {
+                    navigation.navigate('ScheduleDetailsScreen', {
+                        schedule: schedule,
+                        location: location,
+                    });
+                }}
+                style={[StylesGlobal.whiteBordered, {marginTop: 10}]}>
+                <Text
+                    style={StylesGlobal.text}>{dateStr}
+                </Text>
+                <Text style={StylesGlobal.text}>{location?.name}</Text>
+
+            </TouchableOpacity>
+        )
+
+    }
+
+    const renderItemMember = (item) => {
+        const dateStr = moment(new Date(item.date.seconds * 1000)).format('HH:mm');
+        const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
+        const location = locations?.find(c => c.ref.id === item.locationRef.id);
+        const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef.id);
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate('MyBookingScreen', {
                         schedule: schedule,
                         coach: coaches.find(c => c.ref.id === item.coachRef.id),
                         location: location,
                     });
                 }}
                 style={[StylesGlobal.whiteBordered, {marginTop: 10}]}>
-                <View style={[StylesGlobal.rowSpace, {alignItems: 'flex-start'}]}>
-                    <View>
-                        <Image
-                            style={[StylesGlobal.avatar]}
-                            source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
+                <View style={[StylesGlobal.rowSpace]}>
+                    <View style={[StylesGlobal.row]}>
+                        <View>
+                            <Image
+                                style={[StylesGlobal.avatar]}
+                                source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
+                        </View>
+                        <View style={{marginLeft: 10}}>
+                            <Text  style={[StylesGlobal.textGray]}>{location?.name}</Text>
+                            <Text  style={[StylesGlobal.textGray]}>{coach?.name}</Text>
+                            <Text
+                                style={[StylesGlobal.text, {marginTop: 5}]}>{dateStr} / {schedule?.duration} {I18n.t('minutes')}
+                            </Text>
+                        </View>
                     </View>
-                    <View style={{position: 'absolute', right: 100}}>
-                        <Text>{location?.name}</Text>
-                        <Text>{coach?.name}</Text>
-                        <Text
-                            style={StylesGlobal.text}>{dateStr} / {schedule?.duration} {I18n.t('minutes')}
-                        </Text>
-                        <Text style={StylesGlobal.textSecondary}>{schedule?.price}</Text>
-                    </View>
+                    <Text style={StylesGlobal.textSecondary}>{schedule?.price}</Text>
                 </View>
                 <View style={{
                     borderTopLeftRadius: 10,
@@ -185,6 +225,15 @@ export const MyCalendarScreen = ({navigation}) => {
 
             </TouchableOpacity>
         );
+    }
+
+    const renderItem = ({item, index}) => {
+        const iAmCoach = item.coachRef.id === firestoreContext.getCityUser()?.ref.id
+        if (iAmCoach) {
+            return renderItemCoach(item)
+        } else {
+            return renderItemMember(item)
+        }
     };
 
     function renderAddTrip() {
