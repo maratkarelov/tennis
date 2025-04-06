@@ -8,7 +8,7 @@ import {Calendar} from 'react-native-calendars';
 import moment from 'moment/moment';
 import {DATE_FORMATTERS, FIELDS, STATUS, TABLES} from '../../Const';
 import StylesGlobal from '../../theme/styles';
-import {collection, getDocs, getFirestore, query} from '@react-native-firebase/firestore';
+import {collection, getDocs, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -28,42 +28,49 @@ export const MyCalendarScreen = ({navigation}) => {
         const date = new Date(item?.date?.seconds * 1000);
         return date.getDate() === day && date.getMonth() === monthFirstDay?.getMonth();
     });
+    const cancelReasons = [I18n.t('reschedule'), I18n.t('ill'), I18n.t('no_reason')];
 
     //================================================
     // func
     //================================================
 
-    const readMemberSchedule = () => {
-        const lastDay = new Date(monthFirstDay?.getFullYear(), monthFirstDay?.getMonth() + 1, 0, 23, 59, 59, 999);
+    const readMemberSchedule = (lastDay) => {
         // console.log('readMemberSchedule', firestoreContext.getCityUser()?.ref.id, monthFirstDay.toString(), lastDay.toString());
         let qMemberBookings = query(collection(getFirestore(), TABLES.CLASS_BOOKINGS));
         qMemberBookings = qMemberBookings.where(FIELDS.USER_REF, '==', firestoreContext.getCityUser()?.ref);
         qMemberBookings = qMemberBookings.where(FIELDS.DATE, '>=', monthFirstDay);
         qMemberBookings = qMemberBookings.where(FIELDS.DATE, '<=', lastDay);
-        getDocs(qMemberBookings)
-            .then(querySnapshot => {
+        return onSnapshot(
+            qMemberBookings,
+            querySnapshot => {
                 // console.log('querySnapshot', querySnapshot.size);
                 setMemberBookings(querySnapshot.docs.map(qds => {
                     return {ref: qds.ref, ...qds.data()};
                 }));
-            })
-            .catch(reason => {
-                console.log(reason);
+            },
+            error => {
+                console.log(error);
+
             });
+
+    };
+    const readCoachSchedule = (lastDay) => {
         let qSchedule = query(collection(getFirestore(), TABLES.SCHEDULE));
         qSchedule = qSchedule.where(FIELDS.COACH_REF, '==', firestoreContext.getCityUser()?.ref);
         qSchedule = qSchedule.where(FIELDS.DATE, '>=', monthFirstDay);
         qSchedule = qSchedule.where(FIELDS.DATE, '<=', lastDay);
-        getDocs(qSchedule)
-            .then(querySnapshot => {
+        return onSnapshot(
+            qSchedule,
+            querySnapshot => {
+                // console.log('querySnapshot', querySnapshot.size);
                 setCoachSchedule(querySnapshot.docs.map(qds => {
                     return {ref: qds.ref, ...qds.data()};
                 }));
-            })
-            .catch(reason => {
-                console.log(reason);
+            },
+            error => {
+                console.log(error);
             });
-    };
+    }
 
     const onMonthChange = (value) => {
         setMemberBookings([]);
@@ -125,8 +132,15 @@ export const MyCalendarScreen = ({navigation}) => {
 
     useEffect(() => {
         if (monthFirstDay) {
-            readMemberSchedule();
+            const lastDay = new Date(monthFirstDay?.getFullYear(), monthFirstDay?.getMonth() + 1, 0, 23, 59, 59, 999);
+            const subscribeMemberSchedule = readMemberSchedule(lastDay);
+            const subscribeCoachSchedule = readCoachSchedule(lastDay);
+            return () => {
+                subscribeMemberSchedule();
+                subscribeCoachSchedule();
+            };
         }
+
     }, [monthFirstDay]);
 
     useEffect(() => {
@@ -152,7 +166,8 @@ export const MyCalendarScreen = ({navigation}) => {
     // render
     //================================================
     const renderItemCoach = (item) => {
-        console.log('item', item)
+        console.log('item', item);
+        console.log('cancelReasons[item.cancelReason]', cancelReasons[item.cancelReason])
         const schedule = coachSchedule?.find(c => c.ref.id === item.ref.id);
         const dateStr = moment(new Date(schedule.date.seconds * 1000)).format('HH:mm');
         const location = locations?.find(c => c.ref.id === schedule.locationRef.id);
@@ -169,11 +184,41 @@ export const MyCalendarScreen = ({navigation}) => {
                     style={StylesGlobal.text}>{dateStr}
                 </Text>
                 <Text style={StylesGlobal.text}>{location?.name}</Text>
+                {item?.cancelReason >= 0 && (<View style={{
+                    borderTopLeftRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    borderBottomRightRadius: 10,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: baseColor.gray_middle,
+                }}>
+                    <Text
+                        numberOfLines={1}
+                        style={{color: baseColor.white}}>{cancelReasons[item.cancelReason]}</Text>
+
+                </View>)}
+                {item?.countBooked > 0 && (<View style={{
+                    borderTopLeftRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    borderBottomRightRadius: 10,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: baseColor.green,
+                }}>
+                    <Text
+                        numberOfLines={1}
+                        style={{color: baseColor.white}}>{I18n.t('booking')} {item?.countBooked}</Text>
+
+                </View>)}
 
             </TouchableOpacity>
-        )
+        );
 
-    }
+    };
 
     const renderItemMember = (item) => {
         const dateStr = moment(new Date(item.date.seconds * 1000)).format('HH:mm');
@@ -198,8 +243,8 @@ export const MyCalendarScreen = ({navigation}) => {
                                 source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
                         </View>
                         <View style={{marginLeft: 10}}>
-                            <Text  style={[StylesGlobal.textGray]}>{location?.name}</Text>
-                            <Text  style={[StylesGlobal.textGray]}>{coach?.name}</Text>
+                            <Text style={[StylesGlobal.textGray]}>{location?.name}</Text>
+                            <Text style={[StylesGlobal.textGray]}>{coach?.name}</Text>
                             <Text
                                 style={[StylesGlobal.text, {marginTop: 5}]}>{dateStr} / {schedule?.duration} {I18n.t('minutes')}
                             </Text>
@@ -215,7 +260,7 @@ export const MyCalendarScreen = ({navigation}) => {
                     position: 'absolute',
                     bottom: 0,
                     right: 0,
-                    backgroundColor: item?.status === STATUS.ACTIVE_BOOKING ? baseColor.green : item?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? baseColor.sky : baseColor.gray_middle,
+                    backgroundColor: item?.status === STATUS.ACTIVE_BOOKING ? baseColor.green_dark : item?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? baseColor.sky : baseColor.gray_middle,
                 }}>
                     <Text
                         numberOfLines={1}
@@ -225,14 +270,14 @@ export const MyCalendarScreen = ({navigation}) => {
 
             </TouchableOpacity>
         );
-    }
+    };
 
     const renderItem = ({item, index}) => {
-        const iAmCoach = item.coachRef.id === firestoreContext.getCityUser()?.ref.id
+        const iAmCoach = item.coachRef.id === firestoreContext.getCityUser()?.ref.id;
         if (iAmCoach) {
-            return renderItemCoach(item)
+            return renderItemCoach(item);
         } else {
-            return renderItemMember(item)
+            return renderItemMember(item);
         }
     };
 
@@ -259,7 +304,6 @@ export const MyCalendarScreen = ({navigation}) => {
             <Calendar
                 monthFormat={'MMM yyyy'}
                 firstDay={1}
-                minDate={moment(new Date()).format(DATE_FORMATTERS.yearMonthDay)}
                 onMonthChange={onMonthChange}
                 onDayPress={day => {
                     onDayPress(day);

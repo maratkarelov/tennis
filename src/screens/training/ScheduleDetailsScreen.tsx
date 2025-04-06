@@ -8,7 +8,7 @@ import 'moment/locale/ru';
 import moment from 'moment';
 import I18n from '../../locales/i18n';
 import SelectDropdown from 'react-native-select-dropdown';
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import StylesGlobal from '../../theme/styles';
 import {
@@ -44,9 +44,11 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     const [price, setPrice] = useState(schedule?.price ?? 400);
     const [countPlaces, setCountPlaces] = useState(schedule?.countPlaces ?? 6);
     const [duration, setDuration] = useState(schedule?.duration ?? 60);
-    const [cancelReason, setCancelReason] = useState(I18n.t('crash'));
-    const [cancelReasons] = useState([I18n.t('crash'), I18n.t('ill'), I18n.t('no_reason')]);
+    const [cancelReason, setCancelReason] = useState();
+    const cancelReasons = [I18n.t('reschedule'), I18n.t('ill'), I18n.t('no_reason')];
     const [note, setNote] = useState(schedule?.note ?? '');
+    const [openReasonSelectDropdown, setOpenReasonSelectDropdown] = useState(false);
+    const refReasonSelectDropdown = useRef(null)
     const enableEditing = () => {
         return date?.getTime() > Date.now() && location !== undefined && countPlaces > 0 && price > 0 && duration > 0;
     };
@@ -86,6 +88,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 countPlaces: parseInt(countPlaces, 10),
                 price: parseInt(price, 10),
                 note: note,
+                cancelReason: -1
             };
             schedule.ref.update(updateData)
                 .then(ref => navigation.goBack())
@@ -123,7 +126,6 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
             countWaitingConfirmation: 0,
         };
         const dataBooking = {
-            sendNotificationOnWrite: true,
             status: STATUS.CANCELED_BY_DRIVER,
             dateModification: new Date(),
 
@@ -161,6 +163,12 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
         });
 
     }, [navigation, date, schedule]);
+
+    useEffect(() => {
+        if (cancelReason) {
+            setConfirm(I18n.t('cancel_schedule_question') + '\n' + I18n.t('reason') + ': ' + cancelReason)
+        }
+    }, [cancelReason])
 
 
     //================================================
@@ -204,9 +212,12 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     };
 
     const renderCancelReason = (selectedItem) => {
-        return <View style={[StylesGlobal.input, {paddingVertical: 8}]}>
+        return <View style={[StylesGlobal.input, {
+            paddingVertical: 8,
+            backgroundColor: openReasonSelectDropdown ? baseColor.white : baseColor.light_gray_3
+        }]}>
             <Text style={[StylesGlobal.inputText, {
-                color: selectedItem ? baseColor.blue : baseColor.gray_hint,
+                color: selectedItem && openReasonSelectDropdown ? baseColor.blue : baseColor.gray_hint,
                 fontWeight: selectedItem ? '500' : '300',
             }]}>
                 {selectedItem}
@@ -282,13 +293,13 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
             <View>
                 <Text style={StylesGlobal.hint}>{I18n.t('duration')}</Text>
                 <View style={[StylesGlobal.input, {minWidth: 40}]}>
-                    <View style={StylesGlobal.row}>
+                    <View style={[StylesGlobal.row, {alignItems: 'center'}]}>
                         <TextInput
                             style={[StylesGlobal.inputText, {
                                 paddingVertical: Platform.OS === 'ios' ? 3 : 0,
                                 minWidth: 30,
-                                marginRight:10,
-                                paddingHorizontal:0,
+                                marginRight: 10,
+                                paddingHorizontal: 0,
                             }]}
                             maxLength={3}
                             inputMode="tel"
@@ -332,42 +343,45 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
 
     const renderCancel = () => {
         return !route.params?.copy && schedule && schedule?.countPlaces > 0 && date?.getTime() > Date.now() && (
-            <View style={{flexDirection: 'row'}}>
+            <View>
 
-                <SelectDropdown
-                    data={cancelReasons}
-                    defaultValue={I18n.t('crash')}
-                    onSelect={(selectedItem, index) => {
-                        setCancelReason(selectedItem);
-                    }}
-                    renderButton={(selectedItem, isOpened) => {
-                        return (renderCancelReason(selectedItem, isOpened));
-                    }}
-                    renderItem={(item, index, isSelected) => {
-                        return (renderCancelReasonItem(item, isSelected));
-                    }}
-                    showsVerticalScrollIndicator={false}
-                    dropdownStyle={StylesGlobal.dropdownMenuStyle}
-                />
-
-                <TouchableOpacity
+                <ActionButton
+                    backgroundColor={baseColor.red_dark}
+                    title={I18n.t('cancel')}
                     style={{padding: 4, marginRight: 10}}
-                    onPress={() => setConfirm(I18n.t('cancel_trip_question') + '\n' + I18n.t('reason') + ': ' + cancelReason)}>
-                    <MaterialCommunityIcons
-                        name={'stop-circle'}
-                        color={baseColor.red}
-                        size={30}
+                    onPress={() => {
+                        setOpenReasonSelectDropdown(true)
+                        refReasonSelectDropdown.current.openDropdown()
+                    }}>
+                </ActionButton>
+                <View style={{marginTop: 20}}>
+                    <Text style={StylesGlobal.textHint}>{I18n.t('reason')}</Text>
+                    <SelectDropdown
+                        disabled={!openReasonSelectDropdown}
+                        ref={refReasonSelectDropdown}
+                        data={cancelReasons}
+                        defaultValue={I18n.t('reschedule')}
+                        onSelect={(selectedItem, index) => {
+                            setCancelReason(selectedItem);
+                        }}
+                        renderButton={(selectedItem, isOpened) => {
+                            return (renderCancelReason(selectedItem, isOpened));
+                        }}
+                        renderItem={(item, index, isSelected) => {
+                            return (renderCancelReasonItem(item, isSelected));
+                        }}
+                        showsVerticalScrollIndicator={false}
+                        dropdownStyle={StylesGlobal.dropdownMenuStyle}
                     />
-                </TouchableOpacity>
+                </View>
             </View>);
 
     };
 
     const renderSave = () => {
-        return ((route.params?.copy || schedule === undefined) &&
+        return (enableEditing() &&
             <ActionButton
                 disable={!enableEditing()}
-                styles={{marginTop: 50}}
                 onPress={saveSchedule}
                 title={I18n.t('save')}/>);
     };
@@ -430,8 +444,10 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 value={note}
                 onChangeText={v => setNote(v)}
             />
-            {renderCancel()}
-            {renderSave()}
+            <View style={[StylesGlobal.rowSpace, {marginTop: 50, alignItems: 'flex-start'}]}>
+                {renderCancel()}
+                {renderSave()}
+            </View>
         </View>
 
     </BaseLayout>;

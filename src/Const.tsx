@@ -62,7 +62,7 @@ export const FIELDS = {
     CATEGORY_REF: 'categoryRef',
     TRACK_REF: 'trackRef',
     VERIFIED: 'verified',
-    QUIZ_TRACK_RATING_MEMBER:'quizTrackRatingMember'
+    QUIZ_TRACK_RATING_MEMBER: 'quizTrackRatingMember'
 };
 
 export const STATUS = {
@@ -74,6 +74,12 @@ export const STATUS = {
     REJECTED_BY_DRIVER: 5,
     PASSENGER_IN_BLACK_LIST: 6,
 };
+
+export const CANCEL_REASON = {
+    reschedule: 0,
+    ill: 1,
+    no_reason: 2
+}
 
 export const ANDROID_CHANNELS = {
     MESSAGES: 'MESSAGES',
