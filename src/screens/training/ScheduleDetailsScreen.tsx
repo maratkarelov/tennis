@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 import {baseColor} from '../../theme/appTheme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {FIELDS, STATUS, TABLES} from '../../Const';
+import {CANCEL_REASON, FIELDS, STATUS, TABLES} from '../../Const';
 import firestore from '@react-native-firebase/firestore';
 import ActionButton from '../../components/ActionButton';
 
@@ -88,7 +88,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 countPlaces: parseInt(countPlaces, 10),
                 price: parseInt(price, 10),
                 note: note,
-                cancelReason: -1
+                cancelReason: CANCEL_REASON.UNDEFINED
             };
             schedule.ref.update(updateData)
                 .then(ref => navigation.goBack())

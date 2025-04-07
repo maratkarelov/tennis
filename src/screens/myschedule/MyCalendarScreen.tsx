@@ -6,11 +6,12 @@ import Styles from '../cabinet/styles';
 import I18n from '../../locales/i18n';
 import {Calendar} from 'react-native-calendars';
 import moment from 'moment/moment';
-import {DATE_FORMATTERS, FIELDS, STATUS, TABLES} from '../../Const';
+import {CANCEL_REASON, DATE_FORMATTERS, FIELDS, STATUS, TABLES} from '../../Const';
 import StylesGlobal from '../../theme/styles';
 import {collection, getDocs, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import {useIsFocused} from '@react-navigation/native';
+import {getParamByISO} from "iso-country-currency";
 
 export const MyCalendarScreen = ({navigation}) => {
     const firestoreContext = useContext(FirestoreContext);
@@ -23,6 +24,7 @@ export const MyCalendarScreen = ({navigation}) => {
     const [coaches, setCoaches] = useState();
     const [locations, setLocations] = useState();
     const [memberSchedule, setMemberSchedule] = useState();
+    const [markedDates, setMarkedDates] = useState();
     const isFocused = useIsFocused();
     const selectedDayTrips = (memberBookings ?? []).concat(coachSchedule ?? []).filter(item => {
         const date = new Date(item?.date?.seconds * 1000);
@@ -70,7 +72,7 @@ export const MyCalendarScreen = ({navigation}) => {
             error => {
                 console.log(error);
             });
-    }
+    };
 
     const onMonthChange = (value) => {
         setMemberBookings([]);
@@ -152,6 +154,41 @@ export const MyCalendarScreen = ({navigation}) => {
     }, [memberBookings]);
 
     useEffect(() => {
+        const dates = [];
+        if (memberSchedule && coachSchedule) {
+            memberSchedule.forEach(s => {
+                const dateStr = moment(new Date(s.date.seconds * 1000)).format(DATE_FORMATTERS.yearMonthDay);
+                if (!dates.includes(dateStr)) {
+                    dates.push(dateStr);
+                }
+            });
+            coachSchedule.forEach(s => {
+                const dateStr = moment(new Date(s.date.seconds * 1000)).format(DATE_FORMATTERS.yearMonthDay);
+                if (!dates.includes(dateStr)) {
+                    dates.push(dateStr);
+                }
+            });
+            const objectMarkedDates = {};
+            dates.forEach(dateStr => {
+                objectMarkedDates[dateStr] = {
+                    marked: true, customStyles: {
+                        text: {
+                            color: baseColor.green,
+                            fontWeight: 'bold',
+                        },
+                    },
+                };
+            });
+            objectMarkedDates[selected] = {
+                marked: dates.includes(selected),
+                selected: true,
+                disableTouchEvent: true,
+            };
+            setMarkedDates(objectMarkedDates);
+        }
+    }, [coachSchedule, memberSchedule, selected]);
+
+    useEffect(() => {
         navigation.setOptions({
             headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerShown: false,
@@ -166,8 +203,6 @@ export const MyCalendarScreen = ({navigation}) => {
     // render
     //================================================
     const renderItemCoach = (item) => {
-        console.log('item', item);
-        console.log('cancelReasons[item.cancelReason]', cancelReasons[item.cancelReason])
         const schedule = coachSchedule?.find(c => c.ref.id === item.ref.id);
         const dateStr = moment(new Date(schedule.date.seconds * 1000)).format('HH:mm');
         const location = locations?.find(c => c.ref.id === schedule.locationRef.id);
@@ -179,12 +214,35 @@ export const MyCalendarScreen = ({navigation}) => {
                         location: location,
                     });
                 }}
-                style={[StylesGlobal.whiteBordered, {marginTop: 10}]}>
-                <Text
-                    style={StylesGlobal.text}>{dateStr}
-                </Text>
-                <Text style={StylesGlobal.text}>{location?.name}</Text>
-                {item?.cancelReason >= 0 && (<View style={{
+                style={[StylesGlobal.whiteBordered, StylesGlobal.rowSpace, {marginTop: 10}]}>
+                <TouchableOpacity
+                    style={{paddingVertical: 5}}
+                >
+                    <MaterialCommunityIcons
+                        name={'content-copy'}
+                        size={30}
+                        color={baseColor.gray}
+                    ></MaterialCommunityIcons>
+                </TouchableOpacity>
+                <View>
+                    <Text
+                        style={StylesGlobal.text}>{dateStr}
+                    </Text>
+                    {schedule?.countVisitors > 0 &&
+                        <View style={[StylesGlobal.row, {marginTop: 5}]}>
+                            <MaterialCommunityIcons
+                                name={'eye'}
+                                size={16}
+                                color={baseColor.gray_middle}
+                            ></MaterialCommunityIcons>
+                            <Text style={[StylesGlobal.textGray, {
+                                fontSize: 14,
+                                marginLeft: 4
+                            }]}>{schedule?.countVisitors}</Text>
+                        </View>}
+                </View>
+                <Text style={StylesGlobal.textGray}>{location?.name}</Text>
+                {(item?.cancelReason ?? CANCEL_REASON.UNDEFINED) >= 0 && (<View style={{
                     borderTopLeftRadius: 10,
                     paddingHorizontal: 10,
                     paddingVertical: 5,
@@ -221,10 +279,12 @@ export const MyCalendarScreen = ({navigation}) => {
     };
 
     const renderItemMember = (item) => {
-        const dateStr = moment(new Date(item.date.seconds * 1000)).format('HH:mm');
         const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
         const location = locations?.find(c => c.ref.id === item.locationRef.id);
         const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef.id);
+        const dateStr = moment(new Date(schedule.date.seconds * 1000)).format('HH:mm');
+        const currency = schedule?.currencyCountryCode !== undefined && getParamByISO(schedule.currencyCountryCode.toUpperCase(), 'symbol')
+        console.log('currency', currency, schedule, schedule?.currencyCountryCode)
         return (
             <TouchableOpacity
                 onPress={() => {
@@ -250,7 +310,7 @@ export const MyCalendarScreen = ({navigation}) => {
                             </Text>
                         </View>
                     </View>
-                    <Text style={StylesGlobal.textSecondary}>{schedule?.price}</Text>
+                    <Text style={StylesGlobal.textSecondary}>{schedule?.price} {currency}</Text>
                 </View>
                 <View style={{
                     borderTopLeftRadius: 10,
@@ -299,8 +359,21 @@ export const MyCalendarScreen = ({navigation}) => {
         </TouchableOpacity>;
     }
 
+    const renderHeader = () => {
+        const coachActual = coachSchedule?.filter(s=>s.countPlaces>0)
+        const coachBooked = coachActual?.map(s => (s.countBooked ?? 0)).reduce((a, b) => a + b);
+        const coachAmount = coachActual?.map(s => (s.countBooked ?? 0) * (s.price ?? 0)).reduce((a, b) => a + b);
+        return (
+            <View style={{marginLeft:10}}>
+                <Text style={StylesGlobal.textHint}>{I18n.t('schedules_count')} / {I18n.t('schedule_bookings')} / {I18n.t('schedule_amount')} </Text>
+                <Text>{coachActual?.length} / {coachBooked} / {coachAmount} </Text>
+
+            </View>
+        );
+    };
     return (
         <SafeAreaView style={{flex: 1, paddingTop: Platform.OS === 'android' ? 50 : 0}}>
+            {renderHeader()}
             <Calendar
                 monthFormat={'MMM yyyy'}
                 firstDay={1}
@@ -308,9 +381,11 @@ export const MyCalendarScreen = ({navigation}) => {
                 onDayPress={day => {
                     onDayPress(day);
                 }}
-                markedDates={{
-                    [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'},
-                }}
+                markingType={'custom'}
+                markedDates={markedDates}
+                // markedDates={{
+                //     [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'},
+                // }}
             />
             <FlatList
                 style={{marginHorizontal: 10, marginTop: 20}}

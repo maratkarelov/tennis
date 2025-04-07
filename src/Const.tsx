@@ -76,6 +76,7 @@ export const STATUS = {
 };
 
 export const CANCEL_REASON = {
+    UNDEFINED : -1,
     reschedule: 0,
     ill: 1,
     no_reason: 2

@@ -189,5 +189,9 @@
   "new_schedule": "Новое занятие",
   "copy_schedule": "Копирование занятия",
   "duration": "Длительность",
+  "schedules_count": "Занятий",
+  "schedule_bookings": "Броней",
+  "schedule_amount": "Сумма",
+
 }
 
