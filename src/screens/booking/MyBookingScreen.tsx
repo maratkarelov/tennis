@@ -90,7 +90,7 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
                 }));
             })
             .catch(reason => {
-                console.log(reason);
+                console.log('reason',reason);
             });
     };
 

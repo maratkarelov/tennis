@@ -1,14 +1,13 @@
-import {FlatList, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Platform, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import Styles from './styles';
 import StylesGlobal from '../../theme/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import I18n from '../../locales/i18n';
-import {useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FIELDS, STORAGE_KEYS, TABLES} from '../../Const';
 import firestore, {collection, getDocs, getFirestore, query, where} from '@react-native-firebase/firestore';
 import {baseColor} from '../../theme/appTheme';
-import {FirestoreContext} from "../../context/firestoreProvider";
 
 export const ClassesLocationsScreen = ({navigation}) => {
     const [place, setPlace] = useState();
@@ -90,13 +89,18 @@ export const ClassesLocationsScreen = ({navigation}) => {
     };
 
     return (
-        <SafeAreaView style={[StylesGlobal.container, {  paddingTop: Platform.OS === 'android' ? 50 : 0}]}>
+        <SafeAreaView style={[StylesGlobal.container, {paddingTop: Platform.OS === 'android' ? 50 : 0}]}>
             <View style={[StylesGlobal.rowSpace, {margin: 10, height: 60}]}>
                 <TouchableOpacity
                     onPress={() => {
                         handleOpenSport();
                     }}
-                    style={[StylesGlobal.rowSpace, Styles.selector, {flex: 0.5, height: 60, marginRight: 10, alignItems:'center'}]}>
+                    style={[StylesGlobal.rowSpace, Styles.selector, {
+                        flex: 0.5,
+                        height: 60,
+                        marginRight: 10,
+                        alignItems: 'center'
+                    }]}>
                     <Text
                         maxFontSizeMultiplier={1}
                         numberOfLines={2}
@@ -125,7 +129,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
                         marginLeft: 10,
                         flex: 0.5,
                         height: 60,
-                        alignItems:'center'
+                        alignItems: 'center'
                     }]}>
                     <MaterialCommunityIcons
                         size={24}
@@ -135,7 +139,12 @@ export const ClassesLocationsScreen = ({navigation}) => {
                     <Text
                         maxFontSizeMultiplier={1}
                         numberOfLines={2}
-                        style={[Styles.selectorText, {color: baseColor.secondary, textAlign:'center', paddingRight:10, width:'100%'}]}>
+                        style={[Styles.selectorText, {
+                            color: baseColor.secondary,
+                            textAlign: 'center',
+                            paddingRight: 10,
+                            width: '100%'
+                        }]}>
                         {place?.name ?? I18n.t('select_location')}
                     </Text>
 

@@ -41,7 +41,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
     const [supportUser, setSupportUser] = useState(false);
     const firestoreContext = useContext(FirestoreContext);
     const isFocused = useIsFocused();
-    console.log('user',user)
+    // console.log('user',user)
 
     //================================================
     // functions
@@ -77,7 +77,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                     .then();
             })
             .catch(reason => {
-                console.log(reason)});
+                console.log('error',reason)});
     };
 
     const deleteAccount = () => {
@@ -89,7 +89,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
             })
             .catch((error) => {
                 setConfirm(I18n.t(error.code));
-                console.log(error);
+                console.log('error',error);
                 // An error happened.
             })
             .finally(() => setIsLoading(false));

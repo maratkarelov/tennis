@@ -1,7 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {Keyboard, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
+import React, {createRef, useContext, useEffect, useRef, useState} from 'react';
+import firestore, {collection, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FIELDS, TABLES} from '../../Const';
 import {baseColor} from '../../theme/appTheme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,8 +25,10 @@ export const MessagesScreen = ({route, navigation}: Props) => {
     const [lastReadDate, setLastReadDate] = useState();
     const [sending, setSending] = useState(false);
     const [message, setMessage] = useState();
+    const [last, setLast] = useState();
 
     const [keyboardStatus, setKeyboardStatus] = useState(false);
+    const inputRef = createRef(null)
 
     //================================================
     // hooks
@@ -62,6 +64,7 @@ export const MessagesScreen = ({route, navigation}: Props) => {
             const chat = s.data();
             setLastReadDate(chat?.lastReadDate);
         });
+        return subscribeUpdates()
     }, [route.params?.user]);
     // console.log('lastReadDate', lastReadDate)
     //=================================================================================
@@ -85,53 +88,71 @@ export const MessagesScreen = ({route, navigation}: Props) => {
         }
     }
 
+    const subscribeUpdates = () => {
+        const qLast = gitFilteredQuery().orderBy(FIELDS.DATE, 'desc').limit(1)
+        return onSnapshot(
+            qLast,
+            querySnapshot => {
+                // console.log('querySnapshot', querySnapshot.size);
+                setLast(querySnapshot.docs.map(qds => {
+                    return qds.data().date;
+                }));
+            },
+            error => {
+                console.log(error);
+            });
+    };
+
     function gitFilteredQuery() {
-        return firestore()
-            .collection(TABLES.MESSAGES)
-            .where(FIELDS.ID, '==', chatId);
+        let q = query(collection(getFirestore(), TABLES.MESSAGES));
+        q = q.where(FIELDS.ID, '==', chatId);
+        return q;
     }
 
     const sendNewMessage = () => {
-        setSending(true);
-        const dataMessage = {
-            authorRef: firestoreContext.getCityUser()?.ref,
-            userRef: route.params?.user?.ref,
-            text: message,
-            date: new Date(),
-            id: chatId,
-        };
-        console.log('dataMessage',dataMessage)
-        firestore().collection(TABLES.MESSAGES)
-            .add(dataMessage)
-            .then(ref => {
-                setMessage(undefined);
-                setSending(false);
-            })
-            .catch(reason => {
-                console.log(reason.toString());
-            });
-        const chatRef = firestore().collection(TABLES.CHATS).doc(chatId);
-        let dataChat = {
-            authorRef: firestoreContext.getCityUser()?.ref,
-            userRef: route.params?.user?.ref,
-            lastMessage: message,
-            date: new Date(),
-            chat_members: [firestoreContext.getCityUser()?.ref.id, route.params?.user?.ref.id],
-        };
-        chatRef.get().then(ds => {
-                const chat = ds.data();
-                let countUnread = 1;
-                if (chat?.authorRef.id === firestoreContext.getCityUser()?.ref.id) {
-                    countUnread = chat?.countUnread + 1;
-                }
-                dataChat = {
-                    ...dataChat,
-                    countUnread: countUnread,
-                };
-                firestore().collection(TABLES.CHATS).doc(chatId).update(dataChat).then(ref => {
+        console.log('message.trim()',message.trim())
+        if (message.trim().length > 0) {
+            setSending(true);
+            const dataMessage = {
+                authorRef: firestoreContext.getCityUser()?.ref,
+                userRef: route.params?.user?.ref,
+                text: message.trim(),
+                date: new Date(),
+                id: chatId,
+                sendNotificationOnMessage: true,
+            };
+            firestore().collection(TABLES.MESSAGES)
+                .add(dataMessage)
+                .then(ref => {
+                    setMessage(undefined);
+                    setSending(false);
+                })
+                .catch(reason => {
+                    console.log('reason', reason.toString());
                 });
-            }
-        );
+            const chatRef = firestore().collection(TABLES.CHATS).doc(chatId);
+            let dataChat = {
+                authorRef: firestoreContext.getCityUser()?.ref,
+                userRef: route.params?.user?.ref,
+                lastMessage: message,
+                date: new Date(),
+                chat_members: [firestoreContext.getCityUser()?.ref.id, route.params?.user?.ref.id],
+            };
+            chatRef.get().then(ds => {
+                    const chat = ds.data();
+                    let countUnread = 1;
+                    if (chat?.authorRef.id === firestoreContext.getCityUser()?.ref.id) {
+                        countUnread = chat?.countUnread + 1;
+                    }
+                    dataChat = {
+                        ...dataChat,
+                        countUnread: countUnread,
+                    };
+                    firestore().collection(TABLES.CHATS).doc(chatId).update(dataChat).then(ref => {
+                    });
+                }
+            );
+        }
     };
 
     //================================================
@@ -145,14 +166,14 @@ export const MessagesScreen = ({route, navigation}: Props) => {
                 marginVertical: 6,
                 padding: 10,
                 marginHorizontal: 10,
-                backgroundColor: route.params?.user?.ref?.id === item.authorRef.id ? baseColor.white : baseColor.primary_light,
+                backgroundColor: route.params?.user?.ref?.id === item.authorRef.id ? baseColor.white : baseColor.sky_light,
                 borderRadius: 10,
             }]}>
                 <Text style={{color: baseColor.black, fontSize: 18}}>{item.text}</Text>
                 <View style={{alignItems: 'center', justifyContent: 'flex-end', flexDirection: 'row'}}>
                     {item.userRef.id !== corrId && lastReadDate?.seconds >= item.date.seconds && <MaterialCommunityIcons
                         size={24}
-                        color={baseColor.primary}
+                        color={baseColor.sky}
                         name={'check-all'}
                     />}
                     <Text style={{color: baseColor.gray_hint, textAlign: 'right', marginLeft: 10}}>{dateStrFull}</Text>
@@ -168,6 +189,7 @@ export const MessagesScreen = ({route, navigation}: Props) => {
             <PagingLayout
                 inverted={true}
                 query={gitFilteredQuery()}
+                queryName={'messages'}
                 renderItem={item => renderItem(item)}
             />
             {route.params?.corrId === firestoreContext.getCityUser()?.ref.id && <View style={{
@@ -180,6 +202,7 @@ export const MessagesScreen = ({route, navigation}: Props) => {
                 borderTopWidth: 1, borderTopColor: baseColor.light_gray_1,
             }}>
                 <TextInput
+                    ref={inputRef}
                     style={{
                         flex: 1, paddingVertical: 5, fontSize: 18, color: baseColor.black,
                     }}
@@ -187,13 +210,14 @@ export const MessagesScreen = ({route, navigation}: Props) => {
                     multiline={true}
                     placeholderTextColor={baseColor.gray_hint}
                     placeholder={I18n.t('type_message')}
-                    onChangeText={v => setMessage(v)}/>
+                    onChangeText={v => setMessage(v)}
+                />
                 {sending && <LoadingSpinner/>}
                 {!sending && <TouchableOpacity onPress={() => sendNewMessage()}>
                     <MaterialCommunityIcons
                         name={'send'}
                         size={30}
-                        color={message ? baseColor.primary : baseColor.light_gray_2}/>
+                        color={message ? baseColor.sky : baseColor.light_gray_2}/>
                 </TouchableOpacity>}
             </View>}
             {keyboardStatus && Platform.OS === 'ios' && <View style={{height: '50%'}}/>}

@@ -9,7 +9,7 @@ import {baseColor} from '../../theme/appTheme';
 import {NoDataView} from '../noData/NoDataView';
 
 
-export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) => {
+export const PagingLayout = ({query, queryName, renderItem, inverted, keyExtractorField}) => {
     const [refresh, setRefresh] = useState(true);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -20,22 +20,25 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
     //================================================
 
     const subscribeTop = () => {
-        console.log('subscribeTop==========')
+        console.log('subscribeTop==========', new Date().toISOString(), query._collectionPath._parts[0])
         query = query.orderBy(FIELDS.DATE, 'desc');
         return query
             .limit(PAGE_COUNT)
             .onSnapshot(querySnapshot => {
-                setPage(1);
-                setItems([]);
-                setRefresh(true);
-                onResult(querySnapshot);
+                console.log('onSnapshot', querySnapshot?.size, new Date().toISOString())
+                if (querySnapshot !== null) {
+                    setPage(1);
+                    setItems([]);
+                    setRefresh(true);
+                    onResult(querySnapshot);
+                }
             });
     };
 
     useEffect(() => {
         getPagingTotalCount();
         return subscribeTop();
-    }, []);
+    }, [queryName]);
 
     useEffect(() => {
         if (page > 1) {
@@ -50,7 +53,6 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
 
     function runPagingQuery(query, items) {
         if (items?.length < totalCount) {
-            console.log('runPagingQuery')
             query = query.orderBy(FIELDS.DATE, 'desc');
             if (items?.length > 0) {
                 const lastDocument = items[items?.length - 1].doc;
@@ -76,11 +78,8 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
         setRefresh(false);
     }
 
-    console.log('totalCount', totalCount)
-    console.log('items', items)
     function onResult(documentSnapshot) {
         const list = [];
-        console.log('onResult',documentSnapshot?.size)
         documentSnapshot?.docs?.forEach(doc => {
             const task = {
                 ...doc.data(),

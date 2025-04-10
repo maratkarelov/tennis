@@ -45,7 +45,7 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
                 }));
             })
             .catch(reason => {
-                console.log(reason)
+                console.log('error',reason.message);
             });
     };
 

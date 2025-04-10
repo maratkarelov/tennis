@@ -203,12 +203,12 @@ export const MainScreen = ({route, navigation}: Props) => {
                                 }
                             })
                             .catch(reason => {
-                                console.log(reason);
+                                console.log('reason',reason.toString());
                             });
                     }
                 })
                 .catch(reason => {
-                    console.log(reason);
+                    console.log('reason',reason.toString());
                 });
         }
     }
@@ -229,8 +229,8 @@ export const MainScreen = ({route, navigation}: Props) => {
                             cityUser.ref.update({lastAppRateDate: new Date()});
                         }
                     })
-                    .catch((error) => {
-                        console.log(error);
+                    .catch(reason => {
+                        console.log('reason',reason.toString());
                     });
             } else {
                 checkReviewPrompt();

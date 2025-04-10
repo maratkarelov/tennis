@@ -93,7 +93,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
             schedule.ref.update(updateData)
                 .then(ref => navigation.goBack())
                 .catch(reason => {
-                    console.log(reason);
+                    console.log('reason',reason.toString());
                 })
                 .finally(() => setLoading(false));
         } else {
@@ -113,7 +113,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
             firestore().collection(TABLES.SCHEDULE).add(data)
                 .then(ref => navigation.goBack())
                 .catch(reason => {
-                    console.log(reason);
+                    console.log('reason',reason.toString());
                 })
                 .finally(() => setLoading(false));
         }

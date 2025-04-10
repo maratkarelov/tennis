@@ -33,7 +33,7 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                 // console.log('countryCode', result);
             })
             .catch((e) => {
-                console.log(e);
+                console.log('error',e);
             });
         navigation.setOptions({
             headerShown: true,
@@ -103,7 +103,7 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                             updatePushTokens(userRef);
                         })
                         .catch(reason => {
-                            console.log(reason);
+                            console.log('error',reason);
                         });
                 })
                 .catch(error => {

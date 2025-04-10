@@ -4,6 +4,7 @@ import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {baseColor} from '../../theme/appTheme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoadingSpinner from '../LoadingSpinner';
+import StylesGlobal from '../../theme/styles';
 
 export const ChatItem = ({uid, readUserCallback, foundUser, chat, navigation}) => {
     const [user, setUser] = useState(foundUser);
@@ -20,7 +21,7 @@ export const ChatItem = ({uid, readUserCallback, foundUser, chat, navigation}) =
             readUserCallback(user);
         }
     }, [user]);
-    console.log('user', user)
+    // console.log('user', user)
     return (
         <View>
             <TouchableOpacity
@@ -45,7 +46,7 @@ export const ChatItem = ({uid, readUserCallback, foundUser, chat, navigation}) =
                     <TouchableOpacity onPress={() => navigation.navigate('UserDetailsScreen', {user: user})}>
                         {!user && <LoadingSpinner/>}
                         {user?.photoUrl &&
-                            <Image style={Styles.avatar}
+                            <Image style={StylesGlobal.avatar}
                                    source={{uri: user.photoUrl}}/>}
                         {!user?.photoUrl &&
                             <MaterialCommunityIcons

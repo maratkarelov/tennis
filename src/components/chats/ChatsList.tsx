@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {collection, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FIELDS, STORAGE_KEYS, TABLES} from '../../Const';
 import {ChatItem} from './ChatItem';
 import {PagingLayout} from '../../components/base/PagingLayout';
@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const ChatsList = ({navigation, uid}) => {
     const [users, setUsers] = useState([]);
     const [storedPassengers, setStoredPassengers] = useState();
+    const [last, setLast] = useState();
     // console.log('storedPassengers', storedPassengers)
     //================================================
     // hooks
@@ -25,12 +26,28 @@ export const ChatsList = ({navigation, uid}) => {
             setStoredPassengers(list)
         })
     };
+    const subscribeChats = () => {
+        const qLast = gitFilteredQuery().orderBy(FIELDS.DATE, 'desc').limit(1)
+        return onSnapshot(
+            qLast,
+            querySnapshot => {
+                // console.log('querySnapshot', querySnapshot.size);
+                setLast(querySnapshot.docs.map(qds => {
+                    return qds.data().date;
+                }));
+            },
+            error => {
+                console.log(error);
+            });
+    };
+
     useEffect(() => {
         navigation.setOptions({
             headerShown: false,
             headerTitle: ' ',
         });
         readStoragePassengers()
+        return subscribeChats()
     }, [navigation]);
 
     //=================================================================================
@@ -39,8 +56,9 @@ export const ChatsList = ({navigation, uid}) => {
 
 
     function gitFilteredQuery() {
-        return firestore().collection(TABLES.CHATS)
-            .where(FIELDS.CHAT_MEMBERS, 'array-contains', uid);
+        let q = query(collection(getFirestore(), TABLES.CHATS));
+        q = q.where(FIELDS.CHAT_MEMBERS, 'array-contains', uid);
+        return q;
     }
 
     function readUserCallback(user) {
@@ -64,6 +82,7 @@ export const ChatsList = ({navigation, uid}) => {
             }
             }
             query={gitFilteredQuery()}
+            queryName={'chats'}
         />
     );
 };

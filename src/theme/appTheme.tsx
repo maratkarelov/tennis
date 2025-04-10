@@ -5,7 +5,7 @@ export const baseColor = {
   black: '#000000',
   primary: '#016907',
   secondary: '#0067ff',
-  green_dark: '#016b06',
+  green_dark: '#05a20d',
   green: '#05a20d',
   green_1: '#02c909',
   green_light: '#AAE7CE',

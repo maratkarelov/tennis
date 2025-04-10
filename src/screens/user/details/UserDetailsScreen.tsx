@@ -47,7 +47,7 @@ export const UserDetailsScreen = ({route, navigation}: Props) => {
                     }
                 },
                 error => {
-                    console.log(error.message);
+                    console.log('error',error.message);
                 })
         ;
         return () => {

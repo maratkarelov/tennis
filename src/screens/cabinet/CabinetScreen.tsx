@@ -65,7 +65,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                 firestoreContext.setCityUser(undefined);
             })
             .catch(e => {
-                console.log(e.toString());
+                console.log('error',e.toString());
             })
             .finally(() => {
                 setLoading(false);
@@ -84,12 +84,12 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                     })
                     .catch(e => {
                         signOut();
-                        console.log(e.toString());
+                        console.log('error',e.toString());
                     });
             })
             .catch(e => {
                 signOut();
-                console.log(e.toString());
+                console.log('error',e.toString());
             });
     };
 

@@ -52,7 +52,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 }));
             },
             error => {
-                console.log(error);
+                console.log('error',error.message);
 
             });
 
@@ -72,7 +72,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 }));
             },
             error => {
-                console.log(error);
+                console.log('error',error.message);
             });
     };
 
@@ -292,7 +292,7 @@ export const MyCalendarScreen = ({navigation}) => {
     const renderItemMember = (item) => {
         const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
         const location = locations?.find(c => c.ref.id === item.locationRef.id);
-        const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef.id);
+        const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef?.id);
         const dateStr = moment(new Date(schedule?.date.seconds * 1000)).format('HH:mm');
         const currency = schedule?.currencyCountryCode !== undefined && getParamByISO(schedule.currencyCountryCode.toUpperCase(), 'symbol')
         // console.log('currency', currency, schedule, schedule?.currencyCountryCode)
