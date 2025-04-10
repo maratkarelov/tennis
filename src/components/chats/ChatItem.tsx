@@ -20,6 +20,7 @@ export const ChatItem = ({uid, readUserCallback, foundUser, chat, navigation}) =
             readUserCallback(user);
         }
     }, [user]);
+    console.log('user', user)
     return (
         <View>
             <TouchableOpacity

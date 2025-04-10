@@ -99,8 +99,8 @@ export const MessagesScreen = ({route, navigation}: Props) => {
             text: message,
             date: new Date(),
             id: chatId,
-            sendNotificationOnMessage: true,
         };
+        console.log('dataMessage',dataMessage)
         firestore().collection(TABLES.MESSAGES)
             .add(dataMessage)
             .then(ref => {

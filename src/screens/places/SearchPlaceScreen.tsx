@@ -1,7 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {useEffect, useState} from 'react';
 import PlacesList from '../../components/places/PlacesList';
-import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import StylesGlobal from '../../theme/styles';
 import Styles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +17,9 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
     const [regionCollection, setRegionCollection] = useState();
     useEffect(() => {
         navigation.setOptions({
+            headerShown: true,
+            headerTopInsetEnabled: false,
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerBackTitle: ' ',
             title: ' ',
         });
@@ -32,7 +35,7 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
                             setCountryCollection(undefined);
                         }
                     }}
-                    style={[StylesGlobal.row, Styles.root]}>
+                    style={[StylesGlobal.row, Styles.root, {alignItems:'center'}]}>
                     <MaterialCommunityIcons
                         size={40}
                         color={countryCollection ? baseColor.secondary : baseColor.transparent}

@@ -102,13 +102,14 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 locationRef: location.ref,
                 date: date,
                 duration: duration,
-                currencyCountryCode: route.params?.countryCode,
+                currencyCountryCode: firestoreContext.getCityUser()?.countryCode,
                 timeZone: moment(date).format('Z').replace(':', ''),
                 countPlaces: parseInt(countPlaces, 10),
                 price: parseInt(price, 10),
                 note: note,
-                cancelReason: null,
+                cancelReason: CANCEL_REASON.UNDEFINED
             };
+            console.log('data',data)
             firestore().collection(TABLES.SCHEDULE).add(data)
                 .then(ref => navigation.goBack())
                 .catch(reason => {

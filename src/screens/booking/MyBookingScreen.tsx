@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from 'react';
 import moment from 'moment';
 import 'moment/locale/ru';
 import StylesGlobal from '../../theme/styles';
-import {FlatList, Image, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, Linking, Text, TouchableOpacity, View} from 'react-native';
 import I18n from '../../locales/i18n';
 import ActionButton from '../../components/ActionButton';
 import {baseColor} from '../../theme/appTheme';
@@ -13,6 +13,7 @@ import firestore, {collection, getDocs, getFirestore, query} from '@react-native
 import {FIELDS, STATUS, TABLES} from '../../Const';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import {NoDataView} from "../../components/noData/NoDataView";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -45,9 +46,12 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
                 });
         } else {
             const data = {
-                scheduleRef: route.params?.schedule.ref,
-                userRef: firestoreContext.getCityUser()?.ref,
+                date: route.params?.schedule.date,
                 dateModification: new Date(),
+                scheduleRef: route.params?.schedule.ref,
+                locationRef: route.params?.location.ref,
+                coachRef: route.params?.coach.ref,
+                userRef: firestoreContext.getCityUser()?.ref,
                 status: STATUS.ACTIVE_BOOKING,
             };
             firestore()
@@ -75,12 +79,12 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
     }
 
     const readBookings = () => {
-        console.log('readBookings', route.params?.schedule.ref.path);
+        // console.log('readBookings', route.params?.schedule.ref.path);
         let q = query(collection(getFirestore(), TABLES.CLASS_BOOKINGS));
         q = q.where(FIELDS.SCHEDULE_REF, '==', route.params?.schedule.ref);
         getDocs(q)
             .then(querySnapshot => {
-                console.log('querySnapshot', querySnapshot.size);
+                // console.log('querySnapshot', querySnapshot.size);
                 setBookings(querySnapshot.docs.map(qds => {
                     return {ref: qds.ref, ...qds.data()};
                 }));
@@ -121,9 +125,10 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
     };
 
     const renderItem = ({item, index}) => {
-        console.log('renderItem', item);
+        // console.log('renderItem', item);
         const dateModification = moment(new Date(item.dateModification.seconds * 1000)).format('DD MMM,HH:mm');
         const member = members?.find(m => m.ref.id === item.userRef.id);
+        const booking =  bookings?.find(b => b.userRef.id === item.userRef.id);
         return (
             <View
                 style={[StylesGlobal.rowSpace, StylesGlobal.whiteBordered, {marginTop: 10, alignItems: 'flex-start'}]}>
@@ -134,7 +139,7 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
                     <Text style={[StylesGlobal.textHint, {textAlign: 'right'}]}>{dateModification}</Text>
                     <Text style={[StylesGlobal.text, {textAlign: 'right'}]}>{member?.name}</Text>
                 </View>
-                {myBooking && <View style={{
+                {booking && <View style={{
                     borderTopLeftRadius: 10,
                     paddingHorizontal: 10,
                     paddingVertical: 5,
@@ -142,11 +147,11 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
                     position: 'absolute',
                     bottom: 0,
                     right: 0,
-                    backgroundColor: myBooking?.status === STATUS.ACTIVE_BOOKING ? baseColor.green : myBooking?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? baseColor.sky : baseColor.gray_middle,
+                    backgroundColor: booking?.status === STATUS.ACTIVE_BOOKING ? baseColor.green : booking?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? baseColor.sky : baseColor.gray_middle,
                 }}>
                     <Text
                         numberOfLines={1}
-                        style={{color: baseColor.white}}>{I18n.t(myBooking?.status === STATUS.ACTIVE_BOOKING ? 'booking' : myBooking?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? 'waiting' : 'cancelled_by_member')}</Text>
+                        style={{color: baseColor.white}}>{I18n.t(booking?.status === STATUS.ACTIVE_BOOKING ? 'booking' : booking?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? 'waiting' : 'cancelled_by_member')}</Text>
 
                 </View>}
             </View>
@@ -176,17 +181,52 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
                         source={{uri: route.params?.coach?.photoUrl, cache: 'force-cache'}}/>
                 </TouchableOpacity>
                 <View>
-                    <Text style={[StylesGlobal.textGray, {
-                        textAlign: 'right',
-                    }]}>{route.params?.location.name}</Text>
-                    <Text style={[StylesGlobal.textGray, {marginTop: 10, textAlign: 'right'}]}>{dateStr}</Text>
-                    <Text style={[StylesGlobal.textGray, {
-                        marginTop: 10,
-                        textAlign: 'right',
-                    }]}>{route.params?.coach.name}</Text>
+                    <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
+                        {route.params?.location.name}
+                    </Text>
+                    <View style={[StylesGlobal.rowSpace, {alignItems: 'center'}]}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                Linking.openURL(`tel:${route.params?.coach.phone}`);
+                            }}
+                            style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
+                        >
+                            <MaterialCommunityIcons
+                                size={30}
+                                color={baseColor.sky}
+                                name={'phone'}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
+                            onPress={() => {
+                                navigation.navigate('MessagesScreen', {
+                                    user: route.params?.coach,
+                                    corrId: firestoreContext.getCityUser()?.ref.id,
+                                });
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                size={30}
+                                color={baseColor.sky}
+                                name={'send'}
+                            />
+                        </TouchableOpacity>
+                        <View>
+                            <Text style={[StylesGlobal.textGray, {textAlign: 'right'}]}>{dateStr}</Text>
+                            <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
+                                {route.params?.coach.name}
+                            </Text>
+                        </View>
+                    </View>
                 </View>
             </View>
-            <Text style={[StylesGlobal.textHint, {textAlign: 'center',letterSpacing:1.5, fontStyle:'italic',  marginTop: 30}]}>{I18n.t('members')}</Text>
+            <Text style={[StylesGlobal.textHint, {
+                textAlign: 'center',
+                letterSpacing: 1.5,
+                fontStyle: 'italic',
+                marginTop: 30
+            }]}>{I18n.t('members')}</Text>
             {bookings?.length === 0 && <NoDataView/>}
             <FlatList
                 style={{marginHorizontal: 10}}

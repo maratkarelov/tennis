@@ -42,10 +42,11 @@ export const MyCalendarScreen = ({navigation}) => {
         qMemberBookings = qMemberBookings.where(FIELDS.USER_REF, '==', firestoreContext.getCityUser()?.ref);
         qMemberBookings = qMemberBookings.where(FIELDS.DATE, '>=', monthFirstDay);
         qMemberBookings = qMemberBookings.where(FIELDS.DATE, '<=', lastDay);
+        qMemberBookings = qMemberBookings.orderBy(FIELDS.DATE);
         return onSnapshot(
             qMemberBookings,
             querySnapshot => {
-                // console.log('querySnapshot', querySnapshot.size);
+                console.log('querySnapshot', querySnapshot.size);
                 setMemberBookings(querySnapshot.docs.map(qds => {
                     return {ref: qds.ref, ...qds.data()};
                 }));
@@ -61,6 +62,7 @@ export const MyCalendarScreen = ({navigation}) => {
         qSchedule = qSchedule.where(FIELDS.COACH_REF, '==', firestoreContext.getCityUser()?.ref);
         qSchedule = qSchedule.where(FIELDS.DATE, '>=', monthFirstDay);
         qSchedule = qSchedule.where(FIELDS.DATE, '<=', lastDay);
+        qSchedule = qSchedule.orderBy(FIELDS.DATE);
         return onSnapshot(
             qSchedule,
             querySnapshot => {
@@ -171,7 +173,9 @@ export const MyCalendarScreen = ({navigation}) => {
             const objectMarkedDates = {};
             dates.forEach(dateStr => {
                 objectMarkedDates[dateStr] = {
-                    marked: true, customStyles: {
+                    marked: true,
+                    dotColor: baseColor.green,
+                    customStyles: {
                         text: {
                             color: baseColor.green,
                             fontWeight: 'bold',
@@ -216,6 +220,13 @@ export const MyCalendarScreen = ({navigation}) => {
                 }}
                 style={[StylesGlobal.whiteBordered, StylesGlobal.rowSpace, {marginTop: 10}]}>
                 <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate('ScheduleDetailsScreen', {
+                            schedule: schedule,
+                            location: location,
+                            copy: true
+                        });
+                    }}
                     style={{paddingVertical: 5}}
                 >
                     <MaterialCommunityIcons
@@ -282,9 +293,9 @@ export const MyCalendarScreen = ({navigation}) => {
         const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
         const location = locations?.find(c => c.ref.id === item.locationRef.id);
         const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef.id);
-        const dateStr = moment(new Date(schedule.date.seconds * 1000)).format('HH:mm');
+        const dateStr = moment(new Date(schedule?.date.seconds * 1000)).format('HH:mm');
         const currency = schedule?.currencyCountryCode !== undefined && getParamByISO(schedule.currencyCountryCode.toUpperCase(), 'symbol')
-        console.log('currency', currency, schedule, schedule?.currencyCountryCode)
+        // console.log('currency', currency, schedule, schedule?.currencyCountryCode)
         return (
             <TouchableOpacity
                 onPress={() => {
@@ -360,12 +371,13 @@ export const MyCalendarScreen = ({navigation}) => {
     }
 
     const renderHeader = () => {
-        const coachActual = coachSchedule?.filter(s=>s.countPlaces>0)
-        const coachBooked = coachActual?.map(s => (s.countBooked ?? 0)).reduce((a, b) => a + b);
-        const coachAmount = coachActual?.map(s => (s.countBooked ?? 0) * (s.price ?? 0)).reduce((a, b) => a + b);
+        const coachActual = coachSchedule?.filter(s => s.countPlaces > 0)
+        const coachBooked = coachActual?.map(s => (s.countBooked ?? 0)).reduce((a, b) => a + b, 0);
+        const coachAmount = coachActual?.map(s => (s.countBooked ?? 0) * (s.price ?? 0)).reduce((a, b) => a + b, 0);
         return (
-            <View style={{marginLeft:10}}>
-                <Text style={StylesGlobal.textHint}>{I18n.t('schedules_count')} / {I18n.t('schedule_bookings')} / {I18n.t('schedule_amount')} </Text>
+            <View style={{marginLeft: 10}}>
+                <Text
+                    style={StylesGlobal.textHint}>{I18n.t('schedules_count')} / {I18n.t('schedule_bookings')} / {I18n.t('schedule_amount')} </Text>
                 <Text>{coachActual?.length} / {coachBooked} / {coachAmount} </Text>
 
             </View>

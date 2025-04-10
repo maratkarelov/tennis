@@ -14,7 +14,6 @@ interface Props extends StackScreenProps<any, any> {
 }
 
 export const MyChatsScreen = ({navigation, route}: Props) => {
-    const [showOnlyNew, setShowOnlyNew] = useState(true);
     const firestoreContext = useContext(FirestoreContext);
 
     //================================================
@@ -66,7 +65,6 @@ export const MyChatsScreen = ({navigation, route}: Props) => {
                     <ChatsList
                         userRef={firestoreContext.getCityUser()?.ref}
                         uid={auth().currentUser?.uid}
-                        showOnlyNew={showOnlyNew}
                         navigation={navigation}/>}
             </View>
         </SafeAreaView>

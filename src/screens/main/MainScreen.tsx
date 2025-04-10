@@ -288,7 +288,7 @@ export const MainScreen = ({route, navigation}: Props) => {
                         ),
                     }}
                 />
-                <Tab.Screen
+                {auth().currentUser && <Tab.Screen
                     name="MyCalendarScreen"
                     component={MyCalendarScreen}
                     options={{
@@ -301,7 +301,7 @@ export const MainScreen = ({route, navigation}: Props) => {
                             />
                         ),
                     }}
-                />
+                />}
                 {auth().currentUser && <Tab.Screen
                     name="MyChatsScreen"
                     component={MyChatsScreen}

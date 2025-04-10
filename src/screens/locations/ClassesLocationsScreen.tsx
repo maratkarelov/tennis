@@ -3,11 +3,12 @@ import Styles from './styles';
 import StylesGlobal from '../../theme/styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import I18n from '../../locales/i18n';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FIELDS, STORAGE_KEYS, TABLES} from '../../Const';
 import firestore, {collection, getDocs, getFirestore, query, where} from '@react-native-firebase/firestore';
 import {baseColor} from '../../theme/appTheme';
+import {FirestoreContext} from "../../context/firestoreProvider";
 
 export const ClassesLocationsScreen = ({navigation}) => {
     const [place, setPlace] = useState();
@@ -44,7 +45,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
         if (place) {
             const placeHierarchy = place.ref.path.split(TABLES.ITEMS)
             const placeField = placeHierarchy.length === 3 ? FIELDS.PLACE_REF : placeHierarchy.length === 2 ? FIELDS.REGION_REF : FIELDS.COUNTRY_REF
-            console.log('placeField', placeField)
+            // console.log('placeField', placeField)
             q = query(q, where(placeField, '==', place.ref));
         }
         getDocs(q).then(querySnapshot => {
@@ -80,7 +81,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
         return (
             <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate('LocationScheduleScreen', {location: item})
+                    navigation.navigate('LocationCalendarScreen', {location: item})
                 }}
                 style={[StylesGlobal.row, StylesGlobal.whiteBordered]}>
                 <Text>{item.name}</Text>
@@ -134,7 +135,9 @@ export const ClassesLocationsScreen = ({navigation}) => {
                     <Text
                         maxFontSizeMultiplier={1}
                         numberOfLines={2}
-                        style={[Styles.selectorText, {color: baseColor.secondary, textAlign:'center', paddingRight:10, width:'100%'}]}>{place?.name ?? I18n.t('select')}</Text>
+                        style={[Styles.selectorText, {color: baseColor.secondary, textAlign:'center', paddingRight:10, width:'100%'}]}>
+                        {place?.name ?? I18n.t('select_location')}
+                    </Text>
 
                 </TouchableOpacity>
             </View>

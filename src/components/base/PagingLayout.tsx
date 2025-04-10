@@ -20,6 +20,7 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
     //================================================
 
     const subscribeTop = () => {
+        console.log('subscribeTop==========')
         query = query.orderBy(FIELDS.DATE, 'desc');
         return query
             .limit(PAGE_COUNT)
@@ -49,6 +50,7 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
 
     function runPagingQuery(query, items) {
         if (items?.length < totalCount) {
+            console.log('runPagingQuery')
             query = query.orderBy(FIELDS.DATE, 'desc');
             if (items?.length > 0) {
                 const lastDocument = items[items?.length - 1].doc;
@@ -74,8 +76,11 @@ export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) =
         setRefresh(false);
     }
 
+    console.log('totalCount', totalCount)
+    console.log('items', items)
     function onResult(documentSnapshot) {
         const list = [];
+        console.log('onResult',documentSnapshot?.size)
         documentSnapshot?.docs?.forEach(doc => {
             const task = {
                 ...doc.data(),

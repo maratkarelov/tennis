@@ -241,6 +241,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
 
     const headerRight = () => {
         return <ActionButton
+            fontSize={12}
             styles={{marginRight: 10, height: 30}}
             backgroundColor={baseColor.gray_middle}
             onPress={() => {

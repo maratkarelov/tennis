@@ -11,6 +11,7 @@ export default function ActionButton(props: {
     title: string;
     backgroundColor?: string;
     textColor?: string;
+    fontSize?: number;
     disable?: boolean;
     isLoading?: boolean;
 }) {
@@ -25,7 +26,7 @@ export default function ActionButton(props: {
             <Text
                 maxFontSizeMultiplier={0.5}
                 adjustsFontSizeToFit={true}
-                style={[Styles.text, {color: props.textColor ?? baseColor.white}]}>
+                style={[Styles.text, {color: props.textColor ?? baseColor.white, fontSize: props.fontSize}]}>
                 {title}
             </Text>
         );

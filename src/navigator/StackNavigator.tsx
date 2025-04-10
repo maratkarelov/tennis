@@ -3,28 +3,24 @@ import {baseColor} from '../theme/appTheme';
 import {FirestoreContext} from '../context/firestoreProvider';
 import {PasswordScreen} from '../screens/auth/password/PasswordScreen';
 import ChatsScreen from '../screens/chats/ChatsScreen';
-// import MessagesScreen from '../screens/chats/MessagesScreen';
-// import ProfileScreen from '../screens/cabinet/profile/ProfileScreen';
-// import {ReviewsScreen} from '../screens/reviews/ReviewsScreen';
 import {CabinetScreen} from '../screens/cabinet/CabinetScreen';
-// import {SettingsScreen} from '../screens/settings/SettingsScreen';
 import {EmailScreen} from '../screens/auth/email/EmailScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MainScreen} from '../screens/main/MainScreen';
 import SearchPlaceScreen from '../screens/places/SearchPlaceScreen';
 import {ClassesScreen} from '../screens/sports/ClassesScreen';
-import {LocationScheduleScreen} from '../screens/locations/schedule/LocationScheduleScreen';
+import {LocationCalendarScreen} from '../screens/locations/schedule/LocationCalendarScreen';
 import {MyBookingScreen} from '../screens/booking/MyBookingScreen';
 import ProfileScreen from '../screens/cabinet/profile/ProfileScreen';
 import UserDetailsScreen from '../screens/user/details/UserDetailsScreen';
 import {ScheduleDetailsScreen} from '../screens/training/ScheduleDetailsScreen';
-import {CoachLocationsScreen} from "../screens/locations/CoachLocationsScreen";
+import {CoachLocationsScreen} from '../screens/locations/CoachLocationsScreen';
+import MessagesScreen from '../screens/chats/MessagesScreen';
 
 export type RootStackParams = {
     StartScreen: undefined;
     SelectModeScreen: undefined;
     MainScreen: undefined;
-    TripDetailScreen: undefined;
     BookingsScreen: undefined;
     SearchPlaceScreen: undefined;
     UserDetailsScreen: undefined;
@@ -33,21 +29,12 @@ export type RootStackParams = {
     ChatsScreen: undefined;
     MessagesScreen: undefined;
     ProfileScreen: undefined;
-    FilterRoutesScreen: undefined;
     MyBookingDetail: undefined;
     ReviewsScreen: undefined;
     ReviewDetailsScreen: undefined;
     SearchScreen: undefined;
     SearchResultsScreen: undefined;
-    VehicleDetailsScreen: undefined;
-    QuizScreen: undefined;
-    QuizProfileScreen: undefined;
-    QuizProfileTracksScreen: undefined;
-    QuizTrackReactionsScreen: undefined;
-    QuizMemberScreen: undefined;
-    QuizMemberTracksScreen: undefined;
-
-    LocationScheduleScreen: undefined;
+    LocationCalendarScreen: undefined;
     ScheduleDetailsScreen: undefined;
 };
 
@@ -87,14 +74,14 @@ export const StackNavigator = () => {
                 <Stack.Screen name="ScheduleDetailsScreen" component={ScheduleDetailsScreen}/>
                 {/*<Stack.Screen name="BookingsScreen" component={BookingsScreen}/>*/}
                 <Stack.Screen name="CoachLocationsScreen" component={CoachLocationsScreen}/>
-                <Stack.Screen name="LocationScheduleScreen" component={LocationScheduleScreen}/>
+                <Stack.Screen name="LocationCalendarScreen" component={LocationCalendarScreen}/>
                 <Stack.Screen name="MyBookingScreen" component={MyBookingScreen}/>
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}
                 <Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>
                 <Stack.Screen name="ClassesScreen" component={ClassesScreen}/>
                 <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen}/>
                 <Stack.Screen name="ChatsScreen" component={ChatsScreen}/>
-                {/*<Stack.Screen name="MessagesScreen" component={MessagesScreen}/>*/}
+                <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
                 {/*<Stack.Screen name="UserSearchScreen" component={UserSearchScreen}/>*/}
                 <Stack.Screen name="CabinetScreen" component={CabinetScreen}/>
                 <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>

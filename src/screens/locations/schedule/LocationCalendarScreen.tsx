@@ -1,7 +1,7 @@
-import {FlatList, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack/lib/typescript/module/src';
 import {Calendar} from 'react-native-calendars';
-import {useEffect, useRef, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {collection, getDocs, getFirestore, query} from '@react-native-firebase/firestore';
 import {DATE_FORMATTERS, FIELDS, TABLES} from '../../../Const';
 import StylesGlobal from '../../../theme/styles';
@@ -10,12 +10,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {baseColor} from '../../../theme/appTheme';
 import {LocationInfoSheet} from './LocationInfoSheet';
 import I18n from "../../../locales/i18n";
+import {FirestoreContext} from "../../../context/firestoreProvider";
 
 interface Props extends StackScreenProps<any, any> {
 }
 
-export const LocationScheduleScreen = ({route, navigation}: Props) => {
+export const LocationCalendarScreen = ({route, navigation}: Props) => {
+    const firestoreContext = useContext(FirestoreContext);
     const [selected, setSelected] = useState('');
+    const [markedDates, setMarkedDates] = useState();
     const [day, setDay] = useState(new Date().getDate());
     const [monthFirstDay, setMonthFirstDay] = useState();
     const [items, setItems] = useState();
@@ -34,11 +37,16 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
     const readLocationSchedule = () => {
         let q = query(collection(getFirestore(), TABLES.SCHEDULE));
         q = q.where(FIELDS.LOCATION_REF, '==', route.params?.location.ref);
-        getDocs(q).then(querySnapshot => {
-            setItems(querySnapshot.docs.map(qds => {
-                return {ref: qds.ref, ...qds.data()};
-            }));
-        });
+        q = q.orderBy(FIELDS.DATE);
+        getDocs(q)
+            .then(querySnapshot => {
+                setItems(querySnapshot.docs.map(qds => {
+                    return {ref: qds.ref, ...qds.data()};
+                }));
+            })
+            .catch(reason => {
+                console.log(reason)
+            });
     };
 
     const onMonthChange = (value) => {
@@ -85,6 +93,9 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
 
     useEffect(() => {
         navigation.setOptions({
+            headerShown: true,
+            headerTopInsetEnabled: false,
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerBackTitle: ' ',
             title: route.params?.location.name,
             headerRight: () => headerRight(),
@@ -94,6 +105,38 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
         setMonthFirstDay(firstDay);
         readLocationSchedule();
     }, [navigation]);
+
+    useEffect(() => {
+        const dates = [];
+        if (items) {
+            items.forEach(s => {
+                const dateStr = moment(new Date(s.date.seconds * 1000)).format(DATE_FORMATTERS.yearMonthDay);
+                if (!dates.includes(dateStr)) {
+                    dates.push(dateStr);
+                }
+            });
+            const objectMarkedDates = {};
+            dates.forEach(dateStr => {
+                objectMarkedDates[dateStr] = {
+                    marked: true,
+                    dotColor: baseColor.green,
+                    customStyles: {
+                        text: {
+                            color: baseColor.green,
+                            fontWeight: 'bold',
+                        },
+                    },
+                };
+            });
+            objectMarkedDates[selected] = {
+                marked: dates.includes(selected),
+                selected: true,
+                disableTouchEvent: true,
+            };
+            setMarkedDates(objectMarkedDates);
+        }
+    }, [items, selected]);
+
 
     //================================================
     // render
@@ -120,11 +163,23 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
         return (
             <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate('MyClassBookingScreen', {
-                        schedule: item,
-                        coach: coach,
-                        location: route.params?.location
-                    });
+                    if (firestoreContext.getCityUser() === undefined) {
+                        navigation.navigate('EmailScreen', {});
+                    } else {
+                        if (coach.ref.id === firestoreContext.getCityUser()?.ref.id) {
+                            navigation.navigate('ScheduleDetailsScreen', {
+                                schedule: item,
+                                location: route.params?.location
+                            });
+
+                        } else {
+                            navigation.navigate('MyBookingScreen', {
+                                schedule: item,
+                                coach: coach,
+                                location: route.params?.location
+                            });
+                        }
+                    }
                 }}
                 style={[StylesGlobal.rowSpace, StylesGlobal.whiteBordered, {marginTop: 10}]}>
                 <View>
@@ -134,7 +189,7 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
                 </View>
                 <Image
                     style={[StylesGlobal.avatar]}
-                    source={{uri: coach?.photoUrl,cache: 'force-cache'}}/>
+                    source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
             </TouchableOpacity>
         );
     };
@@ -149,9 +204,8 @@ export const LocationScheduleScreen = ({route, navigation}: Props) => {
                 onDayPress={day => {
                     onDayPress(day);
                 }}
-                markedDates={{
-                    [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'},
-                }}
+                markingType={'custom'}
+                markedDates={markedDates}
             />
             <FlatList
                 style={{marginHorizontal: 10, marginTop: 20}}
