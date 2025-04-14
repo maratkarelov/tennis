@@ -1,4 +1,4 @@
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getCountFromServer} from '@react-native-firebase/firestore';
 import {FIELDS, PAGE_COUNT} from '../../Const';
@@ -9,36 +9,32 @@ import {baseColor} from '../../theme/appTheme';
 import {NoDataView} from '../noData/NoDataView';
 
 
-export const PagingLayout = ({query, queryName, renderItem, inverted, keyExtractorField}) => {
+export const PagingLayout = ({query, renderItem, inverted, keyExtractorField}) => {
     const [refresh, setRefresh] = useState(true);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [items, setItems] = useState([]);
-
     //================================================
     // hooks
     //================================================
 
     const subscribeTop = () => {
-        console.log('subscribeTop==========', new Date().toISOString(), query._collectionPath._parts[0])
         query = query.orderBy(FIELDS.DATE, 'desc');
         return query
             .limit(PAGE_COUNT)
             .onSnapshot(querySnapshot => {
-                console.log('onSnapshot', querySnapshot?.size, new Date().toISOString())
-                if (querySnapshot !== null) {
-                    setPage(1);
-                    setItems([]);
-                    setRefresh(true);
-                    onResult(querySnapshot);
-                }
+                console.log('subscribeTop==========', Platform.OS, new Date().toISOString(), query._collectionPath._parts[0])
+                setPage(1);
+                setItems([]);
+                setRefresh(true);
+                onResult(querySnapshot);
             });
     };
 
     useEffect(() => {
         getPagingTotalCount();
         return subscribeTop();
-    }, [queryName]);
+    }, []);
 
     useEffect(() => {
         if (page > 1) {

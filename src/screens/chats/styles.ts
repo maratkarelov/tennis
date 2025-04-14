@@ -34,11 +34,11 @@ export default StyleSheet.create({
     color: baseColor.blue,
   },
   shadowProp: {
-    shadowColor: '#171717',
+    shadowColor: '#e8d5b7',
     shadowOffset: {width: -2, height: 4},
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 8,
 
   }
 });
