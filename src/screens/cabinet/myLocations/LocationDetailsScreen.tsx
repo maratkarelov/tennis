@@ -37,9 +37,11 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
     const [name, setName] = useState(location?.name);
     const [address, setAddress] = useState(location?.address);
     const [coordinates, setCoordinates] = useState(location?.coordinates);
+    const [countryRef, setCountryRef] = useState();
+    const [regionRef, setRegionRef] = useState();
+    const [placeRef, setPlaceRef] = useState();
     const [place, setPlace] = useState();
     const {width} = useWindowDimensions();
-    const isFocused = useIsFocused();
 
     const openGallery = async () => {
 
@@ -69,23 +71,42 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
     const handleOpenPlace = () => {
         navigation.navigate('SearchPlaceScreen', {
             onGoBack: data => {
+                const placeHierarchy = data.path.split('/' + TABLES.ITEMS)
                 console.log('data', data);
+                console.log('placeHierarchy', placeHierarchy);
+                const countryPath = placeHierarchy[0]
+                console.log('countryPath', countryPath)
+                if (placeHierarchy.length === 3) {
+                    setCountryRef(firestore().doc(countryPath))
+                    const regionPath = countryPath + '/' + TABLES.ITEMS + placeHierarchy[1]
+                    console.log('regionPath', regionPath)
+                    setRegionRef(firestore().doc(regionPath))
+                    setPlaceRef(data.ref)
+                } else if (placeHierarchy.length === 2) {
+                    setCountryRef(firestore().doc(countryPath))
+                    setRegionRef(data.ref)
+                    setPlaceRef(undefined)
+                } else {
+                    setCountryRef(data.ref)
+                    setRegionRef(undefined)
+                    setPlaceRef(undefined)
+                }
                 setPlace(data);
             },
         });
 
     };
 
-    const deleteLocation = () => {
-        location?.ref.update({active: false}).then(() => navigation.goBack());
+    const switchLocation = () => {
+        location?.ref.update({active: !location.active}).then(() => navigation.goBack());
 
     };
     const headerRight = () => {
         return (location && <ActionButton
             styles={{marginRight: 10, height: 30}}
             backgroundColor={baseColor.gray_middle}
-            onPress={() => deleteLocation()}
-            title={I18n.t('hide')}/>);
+            onPress={() => switchLocation()}
+            title={I18n.t(location.active?'disable':'enable')}/>);
 
     };
     useEffect(() => {
@@ -104,10 +125,23 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
             name: name,
             address: address,
             coordinates: coordinates,
+            countryRef: countryRef,
         };
         if (photoUrl) {
             data = {
                 photoUrl: photoUrl,
+                ...data,
+            };
+        }
+        if (regionRef) {
+            data = {
+                regionRef: regionRef,
+                ...data,
+            };
+        }
+        if (placeRef) {
+            data = {
+                placeRef: placeRef,
                 ...data,
             };
         }
@@ -120,8 +154,9 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
                 verified: false,
                 ...data,
             };
-            firestore().collection(TABLES.LOCATIONS).add(data);
-
+            firestore().collection(TABLES.LOCATIONS)
+                .add(data)
+                .then(() => navigation.goBack());
         } else {
             location?.ref
                 .update(data)
@@ -189,7 +224,11 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
                         </TouchableOpacity>
                     </ScrollView>
                 </BaseLayout>
-                <ActionButton styles={{margin: 20}} onPress={() => handleSave()} title={I18n.t('save')}/>
+                <ActionButton
+                    disable={!name || !phone || !address || !place}
+                    styles={{margin: 20}}
+                    onPress={() => handleSave()}
+                    title={I18n.t('save')}/>
             </SafeAreaView>
         </SafeAreaProvider>
 

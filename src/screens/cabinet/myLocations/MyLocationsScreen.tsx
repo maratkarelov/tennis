@@ -1,11 +1,11 @@
 import {BaseLayout} from '../../../components/base/BaseLayout';
-import {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {baseColor} from '../../../theme/appTheme';
 import firestore from '@react-native-firebase/firestore';
 import {FirestoreContext} from '../../../context/firestoreProvider';
-import {FIELDS, TABLES} from '../../../Const';
+import {CANCEL_REASON, FIELDS, TABLES} from '../../../Const';
 import ActionButton from '../../../components/ActionButton';
 import I18n from '../../../locales/i18n';
 import Styles from '../../../theme/styles';
@@ -54,6 +54,22 @@ export const MyLocationsScreen = ({navigation}) => {
                 </View>
                 <Text style={Styles.text}>{item.address}</Text>
                 <Text style={Styles.text}>{item.name}</Text>
+                {!item?.active && (<View style={{
+                    borderTopLeftRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    borderBottomRightRadius: 10,
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: baseColor.gray_middle,
+                }}>
+                    <Text
+                        numberOfLines={1}
+                        style={{color: baseColor.white}}>{I18n.t('disabled')}</Text>
+
+                </View>)}
+
             </TouchableOpacity>
         );
 
