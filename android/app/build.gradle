@@ -83,8 +83,8 @@ android {
         applicationId "com.tennis.book"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 10004
+        versionName "1.0.004"
     }
     signingConfigs {
         debug {

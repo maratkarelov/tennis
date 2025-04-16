@@ -16,6 +16,8 @@ import UserDetailsScreen from '../screens/user/details/UserDetailsScreen';
 import {ScheduleDetailsScreen} from '../screens/training/ScheduleDetailsScreen';
 import {CoachLocationsScreen} from '../screens/locations/CoachLocationsScreen';
 import MessagesScreen from '../screens/chats/MessagesScreen';
+import {MyLocationsScreen} from "../screens/cabinet/myLocations/MyLocationsScreen";
+import {LocationDetailsScreen} from "../screens/cabinet/myLocations/LocationDetailsScreen";
 
 export type RootStackParams = {
     StartScreen: undefined;
@@ -89,8 +91,8 @@ export const StackNavigator = () => {
                 {/*<Stack.Screen name="MyBookingDetail" component={MyBookingDetail}/>*/}
                 {/*<Stack.Screen name="ReviewsScreen" component={ReviewsScreen}/>*/}
                 {/*<Stack.Screen name="ReviewDetailsScreen" component={ReviewDetailsScreen}/>*/}
-                {/*<Stack.Screen name="VehiclesScreen" component={VehiclesScreen}/>*/}
-                {/*<Stack.Screen name="VehicleDetailsScreen" component={VehicleDetailsScreen}/>*/}
+                <Stack.Screen name="MyLocationsScreen" component={MyLocationsScreen}/>
+                <Stack.Screen name="LocationDetailsScreen" component={LocationDetailsScreen}/>
                 {/*<Stack.Screen name="SettingsScreen" component={SettingsScreen}/>*/}
                 {/*<Stack.Screen name="QuizProfileScreen" component={QuizProfileScreen}/>*/}
                 {/*<Stack.Screen name="QuizProfileTracksScreen" component={QuizProfileTracksScreen}/>*/}

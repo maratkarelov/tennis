@@ -9,7 +9,7 @@ export const TABLES = {
     PLACES: 'places',
     PLACE_NAMES: 'places_names',
     ITEMS: 'items',
-    VEHICLES: 'vehicles',
+    VEHICLES: 'myLocations',
     EXTERNAL_PHONES: 'external_phones',
     BLACK_LIST: 'black_list',
     CHATS: 'lastChatUnreadCounts',
@@ -25,6 +25,7 @@ export const TABLES = {
 };
 
 export const FIELDS = {
+    ACTIVE: 'active',
     LOCATION_REF: 'locationRef',
     COUNTRY_REF: 'countryRef',
     REGION_REF: 'regionRef',
@@ -35,7 +36,7 @@ export const FIELDS = {
     AUTHOR_REF: 'authorRef',
     USER_REF: 'userRef',
     COACH_REF: 'coachRef',
-    PASSENGER_REF: 'passengerRef',
+    MANAGER_REF: 'managerRef',
     DATE_DEPARTURE: 'dateDeparture',
     DATE_ARRIVAL: 'dateArrival',
     DATE_MODIFICATION: 'dateModification',
@@ -109,7 +110,7 @@ export const EXTERNAL_SERVICE_PHONE = 'Phone';
 export const NOTE = 'note';
 export const KEEP = 'keep';
 export const LAST_REVIEW_PROMPT = 'lastReviewPrompt';
-export const supportId = 'Ym9536ScDhVI1jnDC1ej3YqxQ6Q2';
+export const supportId = 'SDBAExEYSIPjJwbHt3Cl9O4zHZt2';
 export const CONSTANTS = 'constants';
 export const SUPPORT_REGIONS = 'support_regions';
 

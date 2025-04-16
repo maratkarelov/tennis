@@ -1,28 +1,19 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform, ScrollView,
-    StatusBar,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {Keyboard, Platform, StatusBar, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
-import React, {createRef, useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import firestore, {collection, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FIELDS, TABLES} from '../../Const';
 import {baseColor} from '../../theme/appTheme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Styles from './styles';
 import I18n from '../../locales/i18n';
 import {getChatId} from '../../tools/common';
 import moment from 'moment/moment';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import {PagingLayout} from '../../components/base/PagingLayout';
 import {FirestoreContext} from '../../context/firestoreProvider';
+import Styles from "../../theme/styles";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -96,8 +87,8 @@ export const MessagesScreen = ({route, navigation}: Props) => {
     useEffect(() => {
         console.log('useEffect lastMessage chat', lastMessage?.text, chat?.lastMessage)
         if (lastMessage && chat) {
-            console.log('markChatAsRead');
-            console.log('markChatAsRead START');
+            console.log('markChatAsRead', lastMessage.date.seconds,chat?.lastReadDate?.seconds);
+            console.log('markChatAsRead START',lastMessage?.userRef.id,firestoreContext.getCityUser()?.ref.id);
             if (lastMessage?.userRef.id === firestoreContext.getCityUser()?.ref.id && lastMessage.date.seconds > chat?.lastReadDate?.seconds) {
                 const dataChat = {
                     countUnread: 0,
@@ -146,7 +137,6 @@ export const MessagesScreen = ({route, navigation}: Props) => {
             text: message,
             date: new Date(),
             id: chatId,
-            sendNotificationOnMessage: true,
         };
         firestore().collection(TABLES.MESSAGES)
             .add(dataMessage)
@@ -193,38 +183,38 @@ export const MessagesScreen = ({route, navigation}: Props) => {
             <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
 
 
-            {chatId && <PagingLayout
-                inverted={true}
-                query={gitFilteredQuery()}
-                renderItem={item => renderItem(item)}
-            />}
-            {route.params?.corrId === firestoreContext.getCityUser()?.ref.id && <View style={{
-                flexDirection: 'row',
-                alignItems: 'bottom',
-                justifyContent: 'space-between',
-                paddingTop: 10,
-                padding: 10,
-                backgroundColor: baseColor.white,
-                borderTopWidth: 1, borderTopColor: baseColor.light_gray_1,
-            }}>
-                <TextInput
-                    style={{
-                        flex: 1, paddingVertical: 5, fontSize: 18, color: baseColor.black,
-                    }}
-                    value={message}
-                    multiline={true}
-                    placeholderTextColor={baseColor.gray_hint}
-                    placeholder={I18n.t('type_message')}
-                    onChangeText={v => setMessage(v)}/>
-                {sending && <LoadingSpinner/>}
-                {!sending && <TouchableOpacity onPress={() => sendNewMessage()}>
-                    <MaterialCommunityIcons
-                        name={'send'}
-                        size={30}
-                        color={message ? baseColor.sky : baseColor.light_gray_2}/>
-                </TouchableOpacity>}
-            </View>}
-            {keyboardStatus &&  <View style={{height: '50%'}}/>}
+                {chatId && <PagingLayout
+                    inverted={true}
+                    query={gitFilteredQuery()}
+                    renderItem={item => renderItem(item)}
+                />}
+                {route.params?.corrId === firestoreContext.getCityUser()?.ref.id && <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'bottom',
+                    justifyContent: 'space-between',
+                    paddingTop: 10,
+                    padding: 10,
+                    backgroundColor: baseColor.white,
+                    borderTopWidth: 1, borderTopColor: baseColor.light_gray_1,
+                }}>
+                    <TextInput
+                        style={{
+                            flex: 1, paddingVertical: 5, fontSize: 18, color: baseColor.black,
+                        }}
+                        value={message}
+                        multiline={true}
+                        placeholderTextColor={baseColor.gray_hint}
+                        placeholder={I18n.t('type_message')}
+                        onChangeText={v => setMessage(v)}/>
+                    {sending && <LoadingSpinner/>}
+                    {!sending && <TouchableOpacity onPress={() => sendNewMessage()}>
+                        <MaterialCommunityIcons
+                            name={'send'}
+                            size={30}
+                            color={message ? baseColor.sky : baseColor.light_gray_2}/>
+                    </TouchableOpacity>}
+                </View>}
+                {keyboardStatus && Platform.OS === 'ios'&& <View style={{height: '50%'}}/>}
             </SafeAreaView>
         </SafeAreaProvider>
     );

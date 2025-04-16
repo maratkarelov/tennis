@@ -1,12 +1,12 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {useEffect, useState} from 'react';
 import PlacesList from '../../components/places/PlacesList';
-import {Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import StylesGlobal from '../../theme/styles';
 import Styles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {baseColor} from '../../theme/appTheme';
-import {BaseLayout} from "../../components/base/BaseLayout";
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import I18n from "../../locales/i18n";
 
 interface Props extends StackScreenProps<any, any> {
@@ -25,8 +25,8 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
         });
     }, [navigation]);
     return (
-        <SafeAreaView>
-            <View>
+        <SafeAreaProvider>
+            <SafeAreaView style={[StylesGlobal.container, {justifyContent: 'space-between', flex: 1}]}>
                 <TouchableOpacity
                     onPress={() => {
                         if (regionCollection) {
@@ -35,7 +35,7 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
                             setCountryCollection(undefined);
                         }
                     }}
-                    style={[StylesGlobal.row, Styles.root, {alignItems:'center'}]}>
+                    style={[StylesGlobal.row, Styles.root, {alignItems: 'center'}]}>
                     <MaterialCommunityIcons
                         size={40}
                         color={countryCollection ? baseColor.secondary : baseColor.transparent}
@@ -58,8 +58,8 @@ export const SearchPlaceScreen = ({route, navigation}: Props) => {
                         route.params?.onGoBack(place);
                         navigation.goBack();
                     }}/>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 };
 

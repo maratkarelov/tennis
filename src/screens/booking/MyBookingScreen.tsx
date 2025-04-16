@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from 'react';
 import moment from 'moment';
 import 'moment/locale/ru';
 import StylesGlobal from '../../theme/styles';
-import {FlatList, Image, Linking, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, Linking, Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import I18n from '../../locales/i18n';
 import ActionButton from '../../components/ActionButton';
 import {baseColor} from '../../theme/appTheme';
@@ -105,6 +105,7 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
     useEffect(() => {
         navigation.setOptions({
             headerBackTitle: ' ',
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             title: I18n.t('class'),
             headerRight: () => headerRight(),
         });
@@ -161,85 +162,84 @@ export const MyBookingScreen = ({route, navigation}: Props) => {
 
     return (
         <SafeAreaProvider>
-
-        <SafeAreaView>
-            <BaseLayout
-                isLoading={loading}>
-                <View style={[StylesGlobal.rowSpace, {
-                    marginHorizontal: 20,
-                    marginTop: 20,
-                }]}>
-                    <TouchableOpacity
-                        style={{alignItems: 'center'}}
-                        onPress={() => {
-                            navigation.navigate('UserDetailsScreen', {user: route.params?.coach});
-                        }}
-                    >
-                        {loadingAvatar && <View style={{position: 'absolute'}}>
-                            <LoadingSpinner/>
-                        </View>}
-                        <Image
-                            onLoadEnd={handleLoad}
-                            onLoad={handleLoad}
-                            style={[StylesGlobal.avatar]}
-                            source={{uri: route.params?.coach?.photoUrl, cache: 'force-cache'}}/>
-                    </TouchableOpacity>
-                    <View>
-                        <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
-                            {route.params?.location.name}
-                        </Text>
-                        <View style={[StylesGlobal.rowSpace, {alignItems: 'center'}]}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    Linking.openURL(`tel:${route.params?.coach.phone}`);
-                                }}
-                                style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
-                            >
-                                <MaterialCommunityIcons
-                                    size={30}
-                                    color={baseColor.sky}
-                                    name={'phone'}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
-                                onPress={() => {
-                                    navigation.navigate('MessagesScreen', {
-                                        user: route.params?.coach,
-                                        corrId: firestoreContext.getCityUser()?.ref.id,
-                                    });
-                                }}
-                            >
-                                <MaterialCommunityIcons
-                                    size={30}
-                                    color={baseColor.sky}
-                                    name={'send'}
-                                />
-                            </TouchableOpacity>
-                            <View>
-                                <Text style={[StylesGlobal.textGray, {textAlign: 'right'}]}>{dateStr}</Text>
-                                <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
-                                    {route.params?.coach.name}
-                                </Text>
+            <SafeAreaView>
+                <BaseLayout
+                    isLoading={loading}>
+                    <View style={[StylesGlobal.rowSpace, {
+                        marginHorizontal: 20,
+                        marginTop: 20,
+                    }]}>
+                        <TouchableOpacity
+                            style={{alignItems: 'center'}}
+                            onPress={() => {
+                                navigation.navigate('UserDetailsScreen', {user: route.params?.coach});
+                            }}
+                        >
+                            {loadingAvatar && <View style={{position: 'absolute'}}>
+                                <LoadingSpinner/>
+                            </View>}
+                            <Image
+                                onLoadEnd={handleLoad}
+                                onLoad={handleLoad}
+                                style={[StylesGlobal.avatar]}
+                                source={{uri: route.params?.coach?.photoUrl, cache: 'force-cache'}}/>
+                        </TouchableOpacity>
+                        <View>
+                            <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
+                                {route.params?.location.name}
+                            </Text>
+                            <View style={[StylesGlobal.rowSpace, {alignItems: 'center'}]}>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        Linking.openURL(`tel:${route.params?.coach.phone}`);
+                                    }}
+                                    style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
+                                >
+                                    <MaterialCommunityIcons
+                                        size={30}
+                                        color={baseColor.sky}
+                                        name={'phone'}
+                                    />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[StylesGlobal.input, {paddingHorizontal: 10, marginRight: 20}]}
+                                    onPress={() => {
+                                        navigation.navigate('MessagesScreen', {
+                                            user: route.params?.coach,
+                                            corrId: firestoreContext.getCityUser()?.ref.id,
+                                        });
+                                    }}
+                                >
+                                    <MaterialCommunityIcons
+                                        size={30}
+                                        color={baseColor.sky}
+                                        name={'send'}
+                                    />
+                                </TouchableOpacity>
+                                <View>
+                                    <Text style={[StylesGlobal.textGray, {textAlign: 'right'}]}>{dateStr}</Text>
+                                    <Text style={[StylesGlobal.textGray, {textAlign: 'right',}]}>
+                                        {route.params?.coach.name}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-                <Text style={[StylesGlobal.textHint, {
-                    textAlign: 'center',
-                    letterSpacing: 1.5,
-                    fontStyle: 'italic',
-                    marginTop: 30
-                }]}>{I18n.t('members')}</Text>
-                {bookings?.length === 0 && <NoDataView/>}
-                <FlatList
-                    style={{marginHorizontal: 10}}
-                    data={bookings}
-                    renderItem={renderItem}/>
+                    <Text style={[StylesGlobal.textHint, {
+                        textAlign: 'center',
+                        letterSpacing: 1.5,
+                        fontStyle: 'italic',
+                        marginTop: 30
+                    }]}>{I18n.t('members')}</Text>
+                    {bookings?.length === 0 && <NoDataView/>}
+                    <FlatList
+                        style={{marginHorizontal: 10}}
+                        data={bookings}
+                        renderItem={renderItem}/>
 
-            </BaseLayout>
-        </SafeAreaView>
-            </SafeAreaProvider>
+                </BaseLayout>
+            </SafeAreaView>
+        </SafeAreaProvider>
 
-            );
+    );
 };

@@ -120,5 +120,25 @@ export default StyleSheet.create({
         fontWeight: '500',
         color: '#151E26',
     },
+    shadowProp: {
+        shadowColor: '#e8d5b7',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.03,
+        shadowRadius: 5,
+        elevation: 8,
+
+    },
+    selector: {
+        borderColor:baseColor.primary,
+        borderWidth:1,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+    },
+    selectorText: {
+        color: baseColor.primary,
+        fontSize: 18,
+        fontWeight: '600',
+    },
 
 });

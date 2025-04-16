@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Modal, Share, Text, TouchableOpacity, View} from 'react-native';
+import {Modal, Platform, Share, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import Styles from './styles';
 import I18n from '../../locales/i18n';
 import auth from '@react-native-firebase/auth';
@@ -13,6 +13,7 @@ import messaging from '@react-native-firebase/messaging';
 import QRCode from 'react-native-qrcode-svg';
 import firestore from "@react-native-firebase/firestore";
 import {supportId, TABLES} from "../../Const";
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -30,6 +31,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerTitle: ' ',
             headerLeft: () => (
                 <TouchableOpacity style={{marginLeft: 12}} onPress={() => navigation.navigate('ProfileScreen')}>
@@ -65,7 +67,7 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                 firestoreContext.setCityUser(undefined);
             })
             .catch(e => {
-                console.log('error',e.toString());
+                console.log('error', e.toString());
             })
             .finally(() => {
                 setLoading(false);
@@ -84,12 +86,12 @@ export const CabinetScreen = ({navigation, route}: Props) => {
                     })
                     .catch(e => {
                         signOut();
-                        console.log('error',e.toString());
+                        console.log('error', e.toString());
                     });
             })
             .catch(e => {
                 signOut();
-                console.log('error',e.toString());
+                console.log('error', e.toString());
             });
     };
 
@@ -285,24 +287,29 @@ export const CabinetScreen = ({navigation, route}: Props) => {
     }
 
     return (
-        <BaseLayout
-            isLoading={isLoading}
-            error={modalTitle}
-            callbackDialog={() => {
-                setModalTitle(undefined);
-            }}>
-            <View style={Styles.container}>
-                <View>
-                    {renderSupport()}
-                    {renderSettings()}
-                </View>
-                <View>
-                    {showQr && renderDialog()}
-                    {renderShare()}
-                    <UpdateView/>
-                </View>
-            </View>
+        <SafeAreaProvider>
+            <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
+                <BaseLayout
+                    isLoading={isLoading}
+                    error={modalTitle}
+                    callbackDialog={() => {
+                        setModalTitle(undefined);
+                    }}>
+                    <View style={Styles.container}>
+                        <View>
+                            {renderSupport()}
+                            {/*{renderSettings()}*/}
+                        </View>
+                        <View>
+                            {showQr && renderDialog()}
+                            {renderShare()}
+                            <UpdateView/>
+                        </View>
+                    </View>
 
-        </BaseLayout>
+                </BaseLayout>
+            </SafeAreaView>
+        </SafeAreaProvider>
+
     );
 };

@@ -1,4 +1,4 @@
-import {FlatList, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
 import StylesGlobal from "../../theme/styles";
 import {collection, getDocs, getFirestore, query} from "@react-native-firebase/firestore";
@@ -17,6 +17,7 @@ export const ClassesScreen = ({route, navigation}: Props)=>{
     useEffect(()=>{
         navigation.setOptions({
             headerBackTitle: ' ',
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             title: I18n.t('select_class'),
         });
 

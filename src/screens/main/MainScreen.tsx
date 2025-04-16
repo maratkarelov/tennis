@@ -17,7 +17,7 @@ import {
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-// import CalendarScreen from '../trips/calendar/CalendarScreen';
+import RNExitApp from 'react-native-exit-app';
 import {CabinetScreen} from '../cabinet/CabinetScreen';
 import {EmailScreen} from '../auth/email/EmailScreen';
 import MyChatsScreen from '../chats/MyChatsScreen';
@@ -43,8 +43,8 @@ export const MainScreen = ({route, navigation}: Props) => {
     const [confirmYes, setConfirmYes] = useState(undefined);
     const [confirmNo, setConfirmNo] = useState(undefined);
     const [cityUser, setCityUser] = useState();
-    const [unreviewedTripRef, setUnreviewedTripRef] = useState();
-    const [unreviewedDriver, setUnreviewedDriver] = useState();
+    const [unreviewedScheduleRef, setUnreviewedScheduleRef] = useState();
+    const [unreviewedCoach, setUnreviewedCoach] = useState();
     const [appMode, setAppMode] = useState();
     const firestoreContext = useContext(FirestoreContext);
     const isFocused = useIsFocused();
@@ -132,7 +132,7 @@ export const MainScreen = ({route, navigation}: Props) => {
             if (navigation.canGoBack()) {
                 navigation.goBack();
             } else {
-                // RNExitApp.exitApp();
+                RNExitApp.exitApp();
             }
             return true;
         };
@@ -144,8 +144,8 @@ export const MainScreen = ({route, navigation}: Props) => {
         const subscribeAuth = auth().onAuthStateChanged(async user => {
             if (user?.isAnonymous) {
                 setCityUser(undefined);
-                setUnreviewedDriver(undefined);
-                setUnreviewedTripRef(undefined);
+                setUnreviewedCoach(undefined);
+                setUnreviewedScheduleRef(undefined);
             } else if (user !== null) {
                 firestore().collection(TABLES.USERS).doc(auth().currentUser?.uid).get().then(ds => {
                     const value = {ref: ds.ref, ...ds.data()};
@@ -153,8 +153,8 @@ export const MainScreen = ({route, navigation}: Props) => {
                 });
             } else {
                 setCityUser(undefined);
-                setUnreviewedDriver(undefined);
-                setUnreviewedTripRef(undefined);
+                setUnreviewedCoach(undefined);
+                setUnreviewedScheduleRef(undefined);
             }
             return true;
         });
@@ -174,30 +174,30 @@ export const MainScreen = ({route, navigation}: Props) => {
             await AsyncStorage.setItem(LAST_REVIEW_PROMPT, moment(new Date(Date.now())).format(DATE_FORMATTERS.yearMonthDay));
             const monthAgo = new Date();
             monthAgo.setMonth(monthAgo.getMonth() - 1);
-            firestore().collection(TABLES.BOOKINGS)
-                .where(FIELDS.PASSENGER_REF, '==', cityUser.ref)
+            firestore().collection(TABLES.CLASS_BOOKINGS)
+                .where(FIELDS.USER_REF, '==', cityUser.ref)
                 .where(FIELDS.STATUS, '==', STATUS.ACTIVE_BOOKING)
-                .where(FIELDS.DATE_DEPARTURE, '>', monthAgo)
+                .where(FIELDS.DATE, '>', monthAgo)
                 .limit(30)
-                .orderBy(FIELDS.DATE_DEPARTURE, 'desc')
+                .orderBy(FIELDS.DATE, 'desc')
                 .get()
                 .then(qsBookings => {
                     if (!qsBookings.empty) {
-                        const tripRefs = qsBookings.docs.map(qds => qds.data().tripRef);
+                        const scheduleRefs = qsBookings.docs.map(qds => qds.data().tripRef);
                         firestore().collection(TABLES.REVIEWS)
                             .where(FIELDS.AUTHOR_REF, '==', cityUser.ref)
-                            .where(FIELDS.TRIP_REF, 'in', tripRefs)
+                            .where(FIELDS.SCHEDULE_REF, 'in', scheduleRefs)
                             .get()
                             .then(qsReviews => {
-                                const reviewedTripRefs = qsReviews.docs.map(qds => qds.data().tripRef);
-                                const unreviewedTripRefs = tripRefs.filter(ref => !reviewedTripRefs.map(ref => ref.id).includes(ref.id));
-                                if (unreviewedTripRefs.length > 0) {
-                                    setUnreviewedTripRef(unreviewedTripRefs[0]);
+                                const reviewedScheduleRefs = qsReviews.docs.map(qds => qds.data().scheduleRef);
+                                const unreviewedScheduleRefs = scheduleRefs.filter(ref => !reviewedScheduleRefs.map(ref => ref.id).includes(ref.id));
+                                if (unreviewedScheduleRefs.length > 0) {
+                                    setUnreviewedScheduleRef(unreviewedScheduleRefs[0]);
                                     // console.log('unreviewedTripRefs[0]',unreviewedTripRefs[0])
-                                    unreviewedTripRefs[0].get().then(sTrip => {
-                                        const trip = sTrip.data();
-                                        trip.driverRef.get().then(sDriver => {
-                                            setUnreviewedDriver({ref: sDriver.ref, ...sDriver.data()});
+                                    unreviewedScheduleRefs[0].get().then(sSchedule => {
+                                        const schedule = sSchedule.data();
+                                        schedule.coachRef.get().then(sCoach => {
+                                            setUnreviewedCoach({ref: sCoach.ref, ...sCoach.data()});
                                         });
                                     });
                                 }
@@ -239,13 +239,13 @@ export const MainScreen = ({route, navigation}: Props) => {
     }, [cityUser]);
 
     useEffect(() => {
-        if (unreviewedTripRef && unreviewedDriver) {
+        if (unreviewedScheduleRef && unreviewedCoach) {
             // console.log('unreviewedTripRef',unreviewedTripRef.id)
             // console.log('unreviewedDriver',unreviewedDriver)
-            setConfirm(I18n.t('you_have_unreviewed_trips'));
+            setConfirm(I18n.t('you_have_unreviewed_schedule'));
             setConfirmYes('open_last')
         }
-    }, [unreviewedDriver, unreviewedTripRef]);
+    }, [unreviewedCoach, unreviewedScheduleRef]);
     // console.log('cityUser?.someBoolean',cityUser?.someBoolean)
 
     return (
@@ -256,13 +256,13 @@ export const MainScreen = ({route, navigation}: Props) => {
             callbackConfirm={result => {
                 if (confirm === I18n.t('enable_notification_title') && result) {
                     Linking.openSettings();
-                } else if (confirm === I18n.t('you_have_unreviewed_trips') && result) {
+                } else if (confirm === I18n.t('you_have_unreviewed_schedule') && result) {
                     navigation.navigate('ReviewDetailsScreen', {
-                        tripRef: unreviewedTripRef,
-                        user: unreviewedDriver,
+                        scheduleRef: unreviewedScheduleRef,
+                        user: unreviewedCoach,
                     });
-                    setUnreviewedDriver(undefined);
-                    setUnreviewedTripRef(undefined);
+                    setUnreviewedCoach(undefined);
+                    setUnreviewedScheduleRef(undefined);
                 }
                 setConfirm(undefined);
                 setConfirmYes(undefined);

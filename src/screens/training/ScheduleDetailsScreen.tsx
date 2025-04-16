@@ -11,18 +11,8 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {useContext, useEffect, useRef, useState} from 'react';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import StylesGlobal from '../../theme/styles';
-import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform, SafeAreaView,
-    ScrollView, StatusBar,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import {Keyboard, Platform, StatusBar, Text, TextInput, TouchableOpacity, View,} from 'react-native';
 import {baseColor} from '../../theme/appTheme';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {CANCEL_REASON, FIELDS, STATUS, TABLES} from '../../Const';
 import firestore from '@react-native-firebase/firestore';
 import ActionButton from '../../components/ActionButton';
@@ -93,7 +83,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
             schedule.ref.update(updateData)
                 .then(ref => navigation.goBack())
                 .catch(reason => {
-                    console.log('reason',reason.toString());
+                    console.log('reason', reason.toString());
                 })
                 .finally(() => setLoading(false));
         } else {
@@ -109,11 +99,11 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 note: note,
                 cancelReason: CANCEL_REASON.UNDEFINED
             };
-            console.log('data',data)
+            console.log('data', data)
             firestore().collection(TABLES.SCHEDULE).add(data)
                 .then(ref => navigation.goBack())
                 .catch(reason => {
-                    console.log('reason',reason.toString());
+                    console.log('reason', reason.toString());
                 })
                 .finally(() => setLoading(false));
         }

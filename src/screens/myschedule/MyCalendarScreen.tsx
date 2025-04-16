@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, Image, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {baseColor} from '../../theme/appTheme';
 import Styles from '../cabinet/styles';
@@ -11,7 +11,9 @@ import StylesGlobal from '../../theme/styles';
 import {collection, getDocs, getFirestore, onSnapshot, query} from '@react-native-firebase/firestore';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import {useIsFocused} from '@react-navigation/native';
-import {getParamByISO} from "iso-country-currency";
+import {getParamByISO} from 'iso-country-currency';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+
 
 export const MyCalendarScreen = ({navigation}) => {
     const firestoreContext = useContext(FirestoreContext);
@@ -224,7 +226,7 @@ export const MyCalendarScreen = ({navigation}) => {
                         navigation.navigate('ScheduleDetailsScreen', {
                             schedule: schedule,
                             location: location,
-                            copy: true
+                            copy: true,
                         });
                     }}
                     style={{paddingVertical: 5}}
@@ -233,7 +235,7 @@ export const MyCalendarScreen = ({navigation}) => {
                         name={'content-copy'}
                         size={30}
                         color={baseColor.gray}
-                    ></MaterialCommunityIcons>
+                     />
                 </TouchableOpacity>
                 <View>
                     <Text
@@ -245,10 +247,10 @@ export const MyCalendarScreen = ({navigation}) => {
                                 name={'eye'}
                                 size={16}
                                 color={baseColor.gray_middle}
-                            ></MaterialCommunityIcons>
+                             />
                             <Text style={[StylesGlobal.textGray, {
                                 fontSize: 14,
-                                marginLeft: 4
+                                marginLeft: 4,
                             }]}>{schedule?.countVisitors}</Text>
                         </View>}
                 </View>
@@ -294,7 +296,7 @@ export const MyCalendarScreen = ({navigation}) => {
         const location = locations?.find(c => c.ref.id === item.locationRef.id);
         const schedule = memberSchedule?.find(c => c.ref.id === item.scheduleRef?.id);
         const dateStr = moment(new Date(schedule?.date.seconds * 1000)).format('HH:mm');
-        const currency = schedule?.currencyCountryCode !== undefined && getParamByISO(schedule.currencyCountryCode.toUpperCase(), 'symbol')
+        const currency = schedule?.currencyCountryCode !== undefined && getParamByISO(schedule.currencyCountryCode.toUpperCase(), 'symbol');
         // console.log('currency', currency, schedule, schedule?.currencyCountryCode)
         return (
             <TouchableOpacity
@@ -371,7 +373,7 @@ export const MyCalendarScreen = ({navigation}) => {
     }
 
     const renderHeader = () => {
-        const coachActual = coachSchedule?.filter(s => s.countPlaces > 0)
+        const coachActual = coachSchedule?.filter(s => s.countPlaces > 0);
         const coachBooked = coachActual?.map(s => (s.countBooked ?? 0)).reduce((a, b) => a + b, 0);
         const coachAmount = coachActual?.map(s => (s.countBooked ?? 0) * (s.price ?? 0)).reduce((a, b) => a + b, 0);
         return (
@@ -384,7 +386,8 @@ export const MyCalendarScreen = ({navigation}) => {
         );
     };
     return (
-        <SafeAreaView style={{flex: 1, paddingTop: Platform.OS === 'android' ? 50 : 0}}>
+        <SafeAreaProvider>
+            <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
             {renderHeader()}
             <Calendar
                 monthFormat={'MMM yyyy'}
@@ -405,6 +408,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 renderItem={renderItem}/>
             {renderAddTrip()}
         </SafeAreaView>
+</SafeAreaProvider>
     );
 
 };

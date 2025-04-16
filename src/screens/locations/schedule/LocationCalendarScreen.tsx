@@ -1,4 +1,4 @@
-import {FlatList, Image, Platform, SafeAreaView, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack/lib/typescript/module/src';
 import {Calendar} from 'react-native-calendars';
 import {useContext, useEffect, useRef, useState} from 'react';
@@ -11,6 +11,7 @@ import {baseColor} from '../../../theme/appTheme';
 import {LocationInfoSheet} from './LocationInfoSheet';
 import I18n from "../../../locales/i18n";
 import {FirestoreContext} from "../../../context/firestoreProvider";
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -195,7 +196,8 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaProvider>
+            <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
             <Calendar
                 monthFormat={'MMM yyyy'}
                 firstDay={1}
@@ -218,6 +220,7 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
                     setShowInfoSheet(false);
                 }}
             />}
-        </SafeAreaView>
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 };

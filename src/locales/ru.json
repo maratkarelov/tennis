@@ -172,12 +172,6 @@
   "rating": {
     "label": "Рейтинг"
   },
-  "vehicle": {
-    "label": "Транспорт",
-    "model": "Модель",
-    "regNumber": "рег. номер",
-    "region": "регион"
-  },
   "select_class": "Выберите занятие",
   "select_location": "Выберите локацию",
   "members": "Участники",
@@ -186,12 +180,19 @@
   "expand_select_places": "Выберите или раскройте",
   "my_calendar": "Мои занятия",
   "location": "Локация",
+  "locations": "Локации",
   "new_schedule": "Новое занятие",
   "copy_schedule": "Копирование занятия",
   "duration": "Длительность",
   "schedules_count": "Занятий",
   "schedule_bookings": "Броней",
   "schedule_amount": "Сумма",
+  "address": "Адрес",
+  "coordinates": "Координаты",
+  "name": "Название",
+  "phone": "Телефон",
+  "place": "Город (село)",
+  "hide": "Скрыть"
 
 }
 

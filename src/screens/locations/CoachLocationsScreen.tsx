@@ -1,10 +1,11 @@
 import {BaseLayout} from '../../components/base/BaseLayout';
-import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {FlatList, Platform, StatusBar, Text, TouchableOpacity} from 'react-native';
 import {useContext, useEffect, useState} from 'react';
 import StylesGlobal from '../../theme/styles';
 import {FirestoreContext} from '../../context/firestoreProvider';
 import I18n from '../../locales/i18n';
 import {StackScreenProps} from "@react-navigation/stack/lib/typescript/module/src";
+
 interface Props extends StackScreenProps<any, any> {
 }
 
@@ -15,6 +16,7 @@ export const CoachLocationsScreen = ({route, navigation}: Props) => {
     useEffect(() => {
         navigation.setOptions({
             headerBackTitle: ' ',
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerTitle: I18n.t('select_location'),
         });
     }, [navigation]);
@@ -23,16 +25,18 @@ export const CoachLocationsScreen = ({route, navigation}: Props) => {
         const list = [];
         for (const locationRef of firestoreContext.getCityUser()?.locations) {
             const location = (await locationRef.get()).data();
-            list.push({ref: locationRef, ...location});
+            if (location.active) {
+                list.push({ref: locationRef, ...location});
+            }
         }
         setLocations(list);
     };
 
-    useEffect(()=>{
-        if (firestoreContext.getCityUser()){
+    useEffect(() => {
+        if (firestoreContext.getCityUser()) {
             readLocations();
         }
-    },[firestoreContext.getCityUser()]);
+    }, [firestoreContext.getCityUser()]);
 
 
     const renderItem = ({item, index}) => {

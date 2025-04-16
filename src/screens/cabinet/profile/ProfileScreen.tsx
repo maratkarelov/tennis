@@ -1,6 +1,6 @@
 import {BaseLayout} from '../../../components/base/BaseLayout';
 import {StackScreenProps} from '@react-navigation/stack';
-import {ScrollView, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Platform, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Styles from './styles';
 import auth from '@react-native-firebase/auth';
 import React, {useContext, useEffect, useRef, useState} from 'react';
@@ -152,6 +152,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
         navigation.setOptions({
             headerShown: true,
             headerBackTitle: ' ',
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
             headerTitle: I18n.t('profile.label'),
             headerRight: () => headerRight(),
         });
@@ -206,7 +207,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                 }}
                 placeholderTextColor={baseColor.gray_hint}
                 textProps={{
-                    placeholder: '+7...', placeholderTextColor: baseColor.gray_hint,
+                    placeholder: '+380...', placeholderTextColor: baseColor.gray_hint,
                 }}
             />
 
@@ -326,15 +327,15 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                     <UserStatView user={user} navigation={navigation}/>
                     <TouchableOpacity
                         onPress={() => {
-                            navigation.navigate('VehiclesScreen');
+                            navigation.navigate('MyLocationsScreen');
                         }}
                         style={[Styles.row, {padding: 10, marginTop: 20, alignItems: 'center'}]}>
                         <MaterialCommunityIcons
                             size={40}
                             color={baseColor.primary}
-                            name={'car-multiple'}
+                            name={'map-marker-multiple-outline'}
                         />
-                        <Text style={{color: baseColor.gray_middle, fontSize: 16}}>{I18n.t('vehicle.label')}</Text>
+                        <Text style={{color: baseColor.gray_middle, fontSize: 16}}>{I18n.t('locations')}</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

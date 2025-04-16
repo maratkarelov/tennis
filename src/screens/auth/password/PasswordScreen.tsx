@@ -33,13 +33,13 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                 // console.log('countryCode', result);
             })
             .catch((e) => {
-                console.log('error',e);
+                console.log('error', e);
             });
         navigation.setOptions({
             headerShown: true,
             title: '',
         });
-        AsyncStorage.getItem(STORAGE_KEYS.invitedby).then(v=>{
+        AsyncStorage.getItem(STORAGE_KEYS.invitedby).then(v => {
             setInvitedby(v);
         });
 
@@ -48,41 +48,46 @@ export const PasswordScreen = ({route, navigation}: Props) => {
     const updatePushTokens = async (userRef) => {
         if (userRef) {
             console.log('userRef', userRef.id);
-            const token = await messaging().getToken();
-            const tokens = (await userRef.get()).data()?.tokens as [];
-            const newTokens = [];
-            tokens?.forEach(t => {
-                newTokens.push(t);
-            });
-            console.log('tokens', token);
-            const found = tokens?.indexOf(token);
-            console.log('found', found, token);
-            if (found === undefined || found === -1) {
-                newTokens.push(token);
-                console.log('newTokens', newTokens);
-                const updateData = {tokens: newTokens};
-                userRef
-                    .update(updateData)
-                    .then(() => {
-                        setLoading(false);
-                        userRef.get().then(ds => {
-                            const value = {ref: ds.ref, ...ds.data()};
-                            firestoreContext.setCityUser(value);
+            try {
+                const token = await messaging().getToken();
+                const tokens = (await userRef.get()).data()?.tokens as [];
+                const newTokens = [];
+                tokens?.forEach(t => {
+                    newTokens.push(t);
+                });
+                console.log('tokens', token);
+                const found = tokens?.indexOf(token);
+                console.log('found', found, token);
+                if (found === undefined || found === -1) {
+                    newTokens.push(token);
+                    console.log('newTokens', newTokens);
+                    const updateData = {tokens: newTokens};
+                    userRef
+                        .update(updateData)
+                        .then(() => {
+                            setLoading(false);
+                            userRef.get().then(ds => {
+                                const value = {ref: ds.ref, ...ds.data()};
+                                firestoreContext.setCityUser(value);
+                            });
+                            navigation.replace('MainScreen', {email: route.params?.email});
+                        })
+                        .catch(e => {
+                            console.log('newTokens', e);
                         });
-                        navigation.navigate('MainScreen', {email: route.params?.email});
-                    })
-                    .catch(e => {
-                        console.log('newTokens', e);
-                    });
-            } else {
-                setLoading(false);
-                navigation.navigate('MainScreen', {email: route.params?.email});
+                } else {
+                    setLoading(false);
+                    navigation.navigate('MainScreen', {email: route.params?.email});
+                }
+            } catch (e) {
+                console.log(e)
             }
+
         }
     };
 
     const handlePassword = () => {
-        console.log('route.params?.email, formik.values.password',route.params?.newUser, route.params?.email, formik.values.password)
+        console.log('route.params?.email, formik.values.password', route.params?.newUser, route.params?.email, formik.values.password)
         setLoading(true);
         if (route.params?.newUser) {
             auth()
@@ -103,19 +108,21 @@ export const PasswordScreen = ({route, navigation}: Props) => {
                             updatePushTokens(userRef);
                         })
                         .catch(reason => {
-                            console.log('error',reason);
+                            console.log('error', reason);
                         });
                 })
                 .catch(error => {
                     setError(I18n.t('auth.' + error.code));
-                    console.log('error',error)
+                    console.log('error', error)
                     setLoading(false);
                 });
 
         } else {
+            console.log('signInWithEmailAndPassword')
             auth()
                 .signInWithEmailAndPassword(route.params?.email, formik.values.password)
                 .then(() => {
+                    console.log('signInWithEmailAndPassword SUCCESS')
                     const userRef = firestore().collection(TABLES.USERS).doc(auth().currentUser?.uid);
                     updatePushTokens(userRef);
                 })

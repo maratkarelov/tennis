@@ -168,32 +168,25 @@
   "rating": {
     "label": "Rating"
   },
-  "vehicle": {
-    "label": "Vehicle",
-    "model": "Model",
-    "regNumber": "reg. number",
-    "region": "region"
-  },
-  "quiz": {
-    "likes": "Reacted to the choice",
-    "shares": "Recommended the excerpt",
-    "male": "I am a man",
-    "female": "I am a woman",
-    "label": "Club",
-    "confirmYes": "Continue",
-    "confirm": "Welcome to the club of experts!\n\nYour results will be published in the rating.\n\nYou can also receive messages from other club members\n\nClub members can recommend questions or like them.\n\nYou can opt out of participation in your Cabinet (Settings)",
-    "quizTrackRatingMember": "Display me in the member rating",
-    "quizReceiveTrackReactions": "Receive messages from other club members",
-    "rating": "Member rating",
-    "my_stat": "Your answers",
-    "stat": "Answers ",
-    "about_me": "Tell us more about yourself",
-    "about_user": "More about ",
-    "age": "age",
-    "writer": "Writer, book",
-    "song": "What do you like to sing?",
-    "selfImprovement": "What would you like to learn?",
-    "breakfast": "What do you usually eat for breakfast?",
-    "workout": "How often do you exercise and what kind?"
-  }
+  "select_class": "Select a class",
+  "select_location": "Select a location",
+  "members": "Members",
+  "class": "Class",
+  "minutes": "minutes",
+  "expand_select_places": "Select or expand",
+  "my_calendar": "My classes",
+  "location": "Location",
+  "locations": "Locations",
+  "new_schedule": "New class",
+  "copy_schedule": "Copy class",
+  "duration": "Duration",
+  "schedules_count": "Classes",
+  "schedule_bookings": "Bookings",
+  "schedule_amount": "Amount",
+  "address": "Address",
+  "coordinates": "Coordinates",
+  "name": "Name",
+  "phone": "Phone",
+  "place": "City (village)",
+  "hide": "Hide"
 }
