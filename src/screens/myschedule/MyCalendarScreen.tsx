@@ -38,7 +38,7 @@ export const MyCalendarScreen = ({navigation}) => {
     // func
     //================================================
 
-    const readMemberSchedule = (lastDay) => {
+    const readMemberBookings = (lastDay) => {
         // console.log('readMemberSchedule', firestoreContext.getCityUser()?.ref.id, monthFirstDay.toString(), lastDay.toString());
         let qMemberBookings = query(collection(getFirestore(), TABLES.CLASS_BOOKINGS));
         qMemberBookings = qMemberBookings.where(FIELDS.USER_REF, '==', firestoreContext.getCityUser()?.ref);
@@ -54,7 +54,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 }));
             },
             error => {
-                console.log('error',error.message);
+                console.log('error', error.message);
 
             });
 
@@ -74,7 +74,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 }));
             },
             error => {
-                console.log('error',error.message);
+                console.log('error', error.message);
             });
     };
 
@@ -102,7 +102,7 @@ export const MyCalendarScreen = ({navigation}) => {
     }
 
     async function readLocations() {
-        const allLocationsRefs = memberBookings.map(item => item.locationRef);
+        const allLocationsRefs = memberSchedule.concat(coachSchedule).map(item => item.locationRef);
         const locationIds = [...new Set(allLocationsRefs.map(locationRef => locationRef.id))];
         const list = [];
         for (const id of locationIds) {
@@ -113,7 +113,7 @@ export const MyCalendarScreen = ({navigation}) => {
         setLocations(list);
     }
 
-    async function readSchedules() {
+    async function readMemberSchedules() {
         const allSchedulesRefs = memberBookings.map(item => item.scheduleRef);
         const scheduleIds = [...new Set(allSchedulesRefs.map(scheduleRef => scheduleRef.id))];
         const list = [];
@@ -139,7 +139,7 @@ export const MyCalendarScreen = ({navigation}) => {
     useEffect(() => {
         if (monthFirstDay) {
             const lastDay = new Date(monthFirstDay?.getFullYear(), monthFirstDay?.getMonth() + 1, 0, 23, 59, 59, 999);
-            const subscribeMemberSchedule = readMemberSchedule(lastDay);
+            const subscribeMemberSchedule = readMemberBookings(lastDay);
             const subscribeCoachSchedule = readCoachSchedule(lastDay);
             return () => {
                 subscribeMemberSchedule();
@@ -152,12 +152,12 @@ export const MyCalendarScreen = ({navigation}) => {
     useEffect(() => {
         if (memberBookings) {
             readCoaches();
-            readLocations();
-            readSchedules();
+            readMemberSchedules();
         }
     }, [memberBookings]);
 
     useEffect(() => {
+        console.log('selected', selected)
         const dates = [];
         if (memberSchedule && coachSchedule) {
             memberSchedule.forEach(s => {
@@ -193,6 +193,12 @@ export const MyCalendarScreen = ({navigation}) => {
             setMarkedDates(objectMarkedDates);
         }
     }, [coachSchedule, memberSchedule, selected]);
+
+    useEffect(() => {
+        if (coachSchedule && memberSchedule) {
+            readLocations();
+        }
+    }, [coachSchedule, memberSchedule])
 
     useEffect(() => {
         navigation.setOptions({
@@ -235,7 +241,7 @@ export const MyCalendarScreen = ({navigation}) => {
                         name={'content-copy'}
                         size={30}
                         color={baseColor.gray}
-                     />
+                    />
                 </TouchableOpacity>
                 <View>
                     <Text
@@ -247,7 +253,7 @@ export const MyCalendarScreen = ({navigation}) => {
                                 name={'eye'}
                                 size={16}
                                 color={baseColor.gray_middle}
-                             />
+                            />
                             <Text style={[StylesGlobal.textGray, {
                                 fontSize: 14,
                                 marginLeft: 4,
@@ -388,27 +394,27 @@ export const MyCalendarScreen = ({navigation}) => {
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
-            {renderHeader()}
-            <Calendar
-                monthFormat={'MMM yyyy'}
-                firstDay={1}
-                onMonthChange={onMonthChange}
-                onDayPress={day => {
-                    onDayPress(day);
-                }}
-                markingType={'custom'}
-                markedDates={markedDates}
-                // markedDates={{
-                //     [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'},
-                // }}
-            />
-            <FlatList
-                style={{marginHorizontal: 10, marginTop: 20}}
-                data={selectedDayTrips}
-                renderItem={renderItem}/>
-            {renderAddTrip()}
-        </SafeAreaView>
-</SafeAreaProvider>
+                {renderHeader()}
+                <Calendar
+                    monthFormat={'MMM yyyy'}
+                    firstDay={1}
+                    onMonthChange={onMonthChange}
+                    onDayPress={day => {
+                        onDayPress(day);
+                    }}
+                    markingType={'custom'}
+                    markedDates={markedDates}
+                    // markedDates={{
+                    //     [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'},
+                    // }}
+                />
+                <FlatList
+                    style={{marginHorizontal: 10, marginTop: 20}}
+                    data={selectedDayTrips}
+                    renderItem={renderItem}/>
+                {renderAddTrip()}
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 
 };

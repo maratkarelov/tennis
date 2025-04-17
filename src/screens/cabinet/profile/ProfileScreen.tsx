@@ -317,7 +317,7 @@ export const ProfileScreen = ({navigation, route}: Props) => {
                         }}>
                         {renderNameInput()}
                         {renderPhoneInput()}
-                        <Text style={Styles.textBlue}>{user?.email}</Text>
+                        <Text style={Styles.textBlue}>{auth().currentUser?.email}</Text>
                         <Text
                             style={Styles.textBlue}>{moment(new Date(user?.dateRegistration.seconds * 1000)).format('DD MMM YYYY, HH:mm')}</Text>
                     </View>
