@@ -7,9 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {FIELDS, STORAGE_KEYS, TABLES} from '../../Const';
 import firestore, {collection, getDocs, getFirestore, query, where} from '@react-native-firebase/firestore';
 import {baseColor} from '../../theme/appTheme';
-import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 
-export const ClassesLocationsScreen = ({navigation}) => {
+export const SearchLocationsScreen = ({navigation}) => {
     const [place, setPlace] = useState();
     const [sport, setSport] = useState();
     const [locations, setLocations] = useState();
@@ -25,7 +25,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
 
     };
     const handleOpenSport = () => {
-        navigation.navigate('ClassesScreen', {
+        navigation.navigate('SportsScreen', {
             onGoBack: data => {
                 console.log('data', data);
                 AsyncStorage.setItem(STORAGE_KEYS.sport, JSON.stringify({path: data.ref.path, name: data.name}));
@@ -42,8 +42,8 @@ export const ClassesLocationsScreen = ({navigation}) => {
             q = query(q, where(FIELDS.SPORTS_REF, 'array-contains', sport.ref));
         }
         if (place) {
-            const placeHierarchy = place.ref.path.split(TABLES.ITEMS)
-            const placeField = placeHierarchy.length === 3 ? FIELDS.PLACE_REF : placeHierarchy.length === 2 ? FIELDS.REGION_REF : FIELDS.COUNTRY_REF
+            const placeHierarchy = place.ref.path.split(TABLES.ITEMS);
+            const placeField = placeHierarchy.length === 3 ? FIELDS.PLACE_REF : placeHierarchy.length === 2 ? FIELDS.REGION_REF : FIELDS.COUNTRY_REF;
             // console.log('placeField', placeField)
             q = query(q, where(placeField, '==', place.ref));
         }
@@ -81,7 +81,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
         return (
             <TouchableOpacity
                 onPress={() => {
-                    navigation.navigate('LocationCalendarScreen', {location: item})
+                    navigation.navigate('LocationCalendarScreen', {location: item});
                 }}
                 style={[StylesGlobal.row, StylesGlobal.whiteBordered, {marginTop: 10}]}>
                 <Text>{item.name}</Text>
@@ -101,18 +101,18 @@ export const ClassesLocationsScreen = ({navigation}) => {
                             flex: 0.5,
                             height: 60,
                             marginRight: 10,
-                            alignItems: 'center'
+                            alignItems: 'center',
                         }]}>
                         <Text
                             maxFontSizeMultiplier={1}
                             numberOfLines={2}
                             style={StylesGlobal.selectorText}
-                        >{sport?.name ?? I18n.t('select_class')}
+                        >{sport?.name ?? I18n.t('select_sport')}
                         </Text>
                         {sport && <TouchableOpacity
                             style={{position: 'absolute', right: 10}}
                             onPress={() => {
-                                setSport(undefined)
+                                setSport(undefined);
                             }}>
                             <MaterialCommunityIcons
                                 size={24}
@@ -131,7 +131,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
                             marginLeft: 10,
                             flex: 0.5,
                             height: 60,
-                            alignItems: 'center'
+                            alignItems: 'center',
                         }]}>
                         <MaterialCommunityIcons
                             size={24}
@@ -145,7 +145,7 @@ export const ClassesLocationsScreen = ({navigation}) => {
                                 color: baseColor.secondary,
                                 textAlign: 'center',
                                 paddingRight: 10,
-                                width: '100%'
+                                width: '100%',
                             }]}>
                             {place?.name ?? I18n.t('select_location')}
                         </Text>

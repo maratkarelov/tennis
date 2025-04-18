@@ -31,6 +31,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     const [date, setDate] = useState<Date>(schedule?.date ? new Date((schedule?.date.seconds + offset) * 1000) : new Date());
     const [openDate, setOpenDate] = useState(false);
     const [location, setLocation] = useState(route.params?.location);
+    const [sport, setSport] = useState(route.params?.sport);
     const [price, setPrice] = useState(schedule?.price ?? 400);
     const [countPlaces, setCountPlaces] = useState(schedule?.countPlaces ?? 6);
     const [duration, setDuration] = useState(schedule?.duration ?? 60);
@@ -48,6 +49,14 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     // FUNCTIONS
     //=================================================================================
 
+
+    const openMySports = () => {
+        navigation.navigate('SportsScreen', {
+            onGoBack: data => {
+                setSport(data);
+            },
+        });
+    };
 
     const openMyLocations = () => {
         navigation.navigate('CoachLocationsScreen', {
@@ -225,7 +234,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
 
     function renderPrice() {
         return <View>
-            <Text style={StylesGlobal.hint}>{I18n.t('price')}</Text>
+            <Text style={StylesGlobal.textHint}>{I18n.t('price')}</Text>
             <View style={StylesGlobal.input}>
                 <TextInput
                     style={[StylesGlobal.inputText, {
@@ -254,7 +263,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     const renderCount = () => {
         return (
             <View>
-                <Text style={StylesGlobal.hint}>{I18n.t('places')}</Text>
+                <Text style={StylesGlobal.textHint}>{I18n.t('places')}</Text>
                 <View style={[StylesGlobal.input, {minWidth: 40}]}>
                     <TextInput
                         style={[StylesGlobal.inputText, {
@@ -282,7 +291,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
     const renderDuration = () => {
         return (
             <View>
-                <Text style={StylesGlobal.hint}>{I18n.t('duration')}</Text>
+                <Text style={StylesGlobal.textHint}>{I18n.t('duration')}</Text>
                 <View style={[StylesGlobal.input, {minWidth: 40}]}>
                     <View style={[StylesGlobal.row, {alignItems: 'center'}]}>
                         <TextInput
@@ -307,7 +316,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                                     setDuration(parseInt(v ?? 0, 10));
                                 }
                             }}/>
-                        <Text style={StylesGlobal.hint}>{I18n.t('minutes')}</Text>
+                        <Text style={StylesGlobal.textHint}>{I18n.t('minutes')}</Text>
                     </View>
                 </View>
             </View>
@@ -316,7 +325,7 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
 
     const renderCountBooked = () => {
         return (<View>
-                <Text style={StylesGlobal.hint}>{I18n.t('requests')}</Text>
+                <Text style={StylesGlobal.textHint}>{I18n.t('requests')}</Text>
                 <TouchableOpacity
                     disabled={route.params?.copy || route.params?.schedule === undefined}
                     style={[StylesGlobal.input, {minWidth: 30}]}
@@ -411,15 +420,15 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                     </View>
                 </View>
                 <View style={[{width: '50%'}]}>
-                    <TouchableOpacity style={[StylesGlobal.input]} onPress={() => openMyLocations()}>
+                    <TouchableOpacity style={[StylesGlobal.input]} onPress={() => openMySports()}>
                         <Text
                             numberOfLines={1}
                             style={[StylesGlobal.inputText, {
-                                color: location ? baseColor.secondary : baseColor.gray_hint,
+                                color: sport ? baseColor.secondary : baseColor.gray_hint,
                                 paddingVertical: Platform.OS === 'ios' ? 3 : 0,
                                 minWidth: 30,
                             }]}
-                        >{location?.name ?? I18n.t('location')}</Text>
+                        >{sport?.name ?? I18n.t('sport')}</Text>
                     </TouchableOpacity>
                     <View style={[StylesGlobal.rowSpace, {marginTop: 10}]}>
                         {renderDuration()}
@@ -428,7 +437,18 @@ export const ScheduleDetailsScreen = ({route, navigation}: Props) => {
                 </View>
                 {(modeDate || Platform.OS === 'ios') && datePicker()}
             </View>
-            <Text style={[StylesGlobal.hint, {marginTop: 30}]}>{I18n.t('note')}</Text>
+            <TouchableOpacity style={[StylesGlobal.input, {marginTop:20}]} onPress={() => openMyLocations()}>
+                <Text
+                    numberOfLines={1}
+                    style={[StylesGlobal.inputText, {
+                        color: location ? baseColor.secondary : baseColor.gray_hint,
+                        paddingVertical: Platform.OS === 'ios' ? 3 : 0,
+                        minWidth: 30,
+                    }]}
+                >{location?.name ?? I18n.t('location')}</Text>
+            </TouchableOpacity>
+
+            <Text style={[StylesGlobal.textHint, {marginTop: 30}]}>{I18n.t('note')}</Text>
             <TextInput
                 multiline={true}
                 style={StylesGlobal.commentInput}

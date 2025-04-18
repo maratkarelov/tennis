@@ -1,9 +1,9 @@
 import {FlatList, Image, Platform, StatusBar, Text, TouchableOpacity, View} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack/lib/typescript/module/src';
 import {Calendar} from 'react-native-calendars';
-import {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {collection, getDocs, getFirestore, query} from '@react-native-firebase/firestore';
-import {DATE_FORMATTERS, FIELDS, TABLES} from '../../../Const';
+import {DATE_FORMATTERS, FIELDS, STATUS, TABLES} from '../../../Const';
 import StylesGlobal from '../../../theme/styles';
 import moment from 'moment';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,6 +12,7 @@ import {LocationInfoSheet} from './LocationInfoSheet';
 import I18n from "../../../locales/i18n";
 import {FirestoreContext} from "../../../context/firestoreProvider";
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
+import {getParamByISO} from "iso-country-currency";
 
 interface Props extends StackScreenProps<any, any> {
 }
@@ -24,9 +25,10 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
     const [monthFirstDay, setMonthFirstDay] = useState();
     const [items, setItems] = useState();
     const [coaches, setCoaches] = useState();
+    const [sports, setSports] = useState();
     const [showInfoSheet, setShowInfoSheet] = useState(false);
     const refInfoSheet = useRef(undefined);
-    const selectedDayTrips = items?.filter(item => {
+    const selectedDaySchedule = items?.filter(item => {
         const date = new Date(item?.date?.seconds * 1000);
         return date.getDate() === day && date.getMonth() === monthFirstDay?.getMonth();
     });
@@ -46,7 +48,7 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
                 }));
             })
             .catch(reason => {
-                console.log('error',reason.message);
+                console.log('error', reason.message);
             });
     };
 
@@ -73,6 +75,18 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
         setCoaches(list);
     }
 
+    async function readSports() {
+        const allRefs = items.map(item => item.sportRef);
+        const ids = [...new Set(allRefs.map(ref => ref.id))];
+        const list = [];
+        for (const id of ids) {
+            const foundRef = allRefs?.find(ref => ref.id === id);
+            const item = (await foundRef.get()).data();
+            list.push({ref: foundRef, ...item});
+        }
+        setSports(list);
+    }
+
     //================================================
     // hooks
     //================================================
@@ -80,6 +94,7 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
     useEffect(() => {
         if (items) {
             readCoaches();
+            readSports();
         }
     }, [items]);
 
@@ -161,6 +176,8 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
     const renderItem = ({item, index}) => {
         const dateStr = moment(new Date(item.date.seconds * 1000)).format('HH:mm');
         const coach = coaches?.find(c => c.ref.id === item.coachRef.id);
+        const currency = item?.currencyCountryCode !== undefined && getParamByISO(item.currencyCountryCode.toUpperCase(), 'symbol');
+        const sport = sports.find(s=>s.ref.id === item.sportRef.id)
         return (
             <TouchableOpacity
                 onPress={() => {
@@ -182,15 +199,42 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
                         }
                     }
                 }}
-                style={[StylesGlobal.rowSpace, StylesGlobal.whiteBordered, {marginTop: 10}]}>
-                <View>
-                    <Text style={StylesGlobal.text}>{dateStr} / {item.duration} {I18n.t('minutes')}</Text>
-                    <Text style={StylesGlobal.textSecondary}>{item.price}</Text>
-                    <Text>{coach?.name}</Text>
+                style={[StylesGlobal.whiteBordered, {marginTop: 10}]}>
+                <View style={[StylesGlobal.rowSpace]}>
+                    <View style={[StylesGlobal.row]}>
+                        <View>
+                            <Image
+                                style={[StylesGlobal.avatar]}
+                                source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
+                        </View>
+                        <View style={{marginLeft: 10}}>
+                            <Text style={[StylesGlobal.textGray]}>{coach?.name}</Text>
+                            <Text
+                                style={[StylesGlobal.text, {marginTop: 5}]}>{dateStr} / {item?.duration} {I18n.t('minutes')}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text style={StylesGlobal.textSecondary}>{item?.price} {currency}</Text>
                 </View>
-                <Image
-                    style={[StylesGlobal.avatar]}
-                    source={{uri: coach?.photoUrl, cache: 'force-cache'}}/>
+                <View style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                }}>
+                    <Text style={[StylesGlobal.textSecondary, {textAlign:'right', marginRight:10}]}>{sport}</Text>
+                    <View style={{
+                        borderTopLeftRadius: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5,
+                        borderBottomRightRadius: 10,
+                        backgroundColor: item?.status === STATUS.ACTIVE_BOOKING ? baseColor.green_dark : item?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? baseColor.sky : baseColor.gray_middle,
+                    }}>
+                        <Text
+                            numberOfLines={1}
+                            style={{color: baseColor.white}}>{I18n.t(item?.status === STATUS.ACTIVE_BOOKING ? 'booking' : item?.status === STATUS.WAITING_CONFIRMATION_BOOKING ? 'waiting' : 'cancelled_by_member')}</Text>
+
+                    </View>
+                </View>
             </TouchableOpacity>
         );
     };
@@ -198,28 +242,30 @@ export const LocationCalendarScreen = ({route, navigation}: Props) => {
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
-            <Calendar
-                monthFormat={'MMM yyyy'}
-                firstDay={1}
-                minDate={moment(new Date()).format(DATE_FORMATTERS.yearMonthDay)}
-                onMonthChange={onMonthChange}
-                onDayPress={day => {
-                    onDayPress(day);
-                }}
-                markingType={'custom'}
-                markedDates={markedDates}
-            />
-            <FlatList
-                style={{marginHorizontal: 10, marginTop: 20}}
-                data={selectedDayTrips}
-                renderItem={renderItem}/>
-            {showInfoSheet && <LocationInfoSheet
-                location={route.params?.location}
-                ref={refInfoSheet}
-                dismissCallback={() => {
-                    setShowInfoSheet(false);
-                }}
-            />}
+                <Calendar
+                    monthFormat={'MMM yyyy'}
+                    firstDay={1}
+                    minDate={moment(new Date()).format(DATE_FORMATTERS.yearMonthDay)}
+                    onMonthChange={onMonthChange}
+                    onDayPress={day => {
+                        onDayPress(day);
+                    }}
+                    markingType={'custom'}
+                    markedDates={markedDates}
+                />
+                <FlatList
+                    style={{marginHorizontal: 10, marginTop: 20}}
+                    data={selectedDaySchedule}
+                    renderItem={renderItem}/>
+                {showInfoSheet && <LocationInfoSheet
+                    location={route.params?.location}
+                    ref={refInfoSheet}
+                    navigation={navigation}
+                    corrId={firestoreContext.getCityUser()?.ref.id}
+                    dismissCallback={() => {
+                        setShowInfoSheet(false);
+                    }}
+                />}
             </SafeAreaView>
         </SafeAreaProvider>
     );

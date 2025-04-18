@@ -29,10 +29,10 @@ export default StyleSheet.create({
         height: 65,
         borderRadius: 20,
     },
-    text: {color: baseColor.black, fontSize: 16},
+    text: {color: baseColor.black, fontSize: 18},
     textHint: {color: baseColor.gray_hint, fontSize: 16},
     textGray: {color: baseColor.gray_middle, fontSize: 16},
-    textSecondary: {color: baseColor.secondary, fontSize: 16},
+    textSecondary: {color: baseColor.secondary, fontSize: 18},
     addTask: {
         alignContent: 'center',
         width: 40,
@@ -51,22 +51,20 @@ export default StyleSheet.create({
         },
     },
     input: {
+        fontSize: 18,
         backgroundColor: baseColor.white,
         paddingHorizontal: 10,
         borderWidth: 1,
         borderColor: baseColor.light_gray_2,
-        paddingVertical: 5,
+        paddingVertical: 4,
         borderRadius: 10,
+        alignItems:'center'
     },
     inputText: {
-        fontSize: 16,
+        fontSize: 18,
         textAlign: 'center',
         paddingVertical: 0,
         color: baseColor.blue
-    },
-    hint: {
-        textAlign: 'center',
-        color: baseColor.gray_hint
     },
     commentInput: {
         fontStyle: 'italic',

@@ -172,15 +172,17 @@
   "rating": {
     "label": "Рейтинг"
   },
-  "select_class": "Выберите занятие",
+  "select_sport": "Выберите занятие",
   "select_location": "Выберите локацию",
   "members": "Участники",
   "class": "Занятие",
   "minutes": "минут",
   "expand_select_places": "Выберите или раскройте",
   "my_calendar": "Мои занятия",
+  "sport": "Спорт",
   "location": "Локация",
   "locations": "Локации",
+  "coaches": "Тренера",
   "new_schedule": "Новое занятие",
   "copy_schedule": "Копирование занятия",
   "duration": "Длительность",
@@ -194,7 +196,9 @@
   "place": "Город (село)",
   "disable": "Остановить",
   "enable": "Запустить",
-  "disabled": "Не работает"
+  "disabled": "Не работает",
+  "contact_us": "Напишите нам",
+  "job_complain": "По вопросам сотрудничества, жалоб и предложений"
 
 }
 

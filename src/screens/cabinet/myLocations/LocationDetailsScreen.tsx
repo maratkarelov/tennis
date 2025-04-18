@@ -1,6 +1,7 @@
 import {BaseLayout} from '../../../components/base/BaseLayout';
 import {StackScreenProps} from '@react-navigation/stack';
 import {
+    FlatList,
     Image,
     Platform,
     ScrollView,
@@ -8,18 +9,16 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    useWindowDimensions,
+    useWindowDimensions, View,
 } from 'react-native';
 import {baseColor} from '../../../theme/appTheme';
 import I18n from '../../../locales/i18n';
 import React, {useContext, useEffect, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Styles from './styles';
 import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import {TABLES} from '../../../Const';
 import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
 import {FirestoreContext} from '../../../context/firestoreProvider';
 import ActionButton from '../../../components/ActionButton';
 import StylesGlobal from '../../../theme/styles';
@@ -41,7 +40,13 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
     const [regionRef, setRegionRef] = useState();
     const [placeRef, setPlaceRef] = useState();
     const [place, setPlace] = useState();
+    const [sports, setSports] = useState();
+    const [coaches, setCoaches] = useState();
     const {width} = useWindowDimensions();
+
+    //=================================================================================
+    // FUNCTIONS
+    //=================================================================================
 
     const openGallery = async () => {
 
@@ -67,29 +72,35 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
                 setPhotoUrl(url);
             });
     };
+    const openSports = () => {
+        navigation.navigate('SportsScreen', {
+            multiplySelection: true,
+            sports: sports,
+            onGoBack: data => {
+                setSports(data);
+            },
+        });
+    };
+
 
     const handleOpenPlace = () => {
         navigation.navigate('SearchPlaceScreen', {
             onGoBack: data => {
-                const placeHierarchy = data.path.split('/' + TABLES.ITEMS)
-                console.log('data', data);
-                console.log('placeHierarchy', placeHierarchy);
-                const countryPath = placeHierarchy[0]
-                console.log('countryPath', countryPath)
+                const placeHierarchy = data.path.split('/' + TABLES.ITEMS);
+                const countryPath = placeHierarchy[0];
                 if (placeHierarchy.length === 3) {
-                    setCountryRef(firestore().doc(countryPath))
-                    const regionPath = countryPath + '/' + TABLES.ITEMS + placeHierarchy[1]
-                    console.log('regionPath', regionPath)
-                    setRegionRef(firestore().doc(regionPath))
-                    setPlaceRef(data.ref)
+                    setCountryRef(firestore().doc(countryPath));
+                    const regionPath = countryPath + '/' + TABLES.ITEMS + placeHierarchy[1];
+                    setRegionRef(firestore().doc(regionPath));
+                    setPlaceRef(data.ref);
                 } else if (placeHierarchy.length === 2) {
-                    setCountryRef(firestore().doc(countryPath))
-                    setRegionRef(data.ref)
-                    setPlaceRef(undefined)
+                    setCountryRef(firestore().doc(countryPath));
+                    setRegionRef(data.ref);
+                    setPlaceRef(undefined);
                 } else {
-                    setCountryRef(data.ref)
-                    setRegionRef(undefined)
-                    setPlaceRef(undefined)
+                    setCountryRef(data.ref);
+                    setRegionRef(undefined);
+                    setPlaceRef(undefined);
                 }
                 setPlace(data);
             },
@@ -106,19 +117,9 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
             styles={{marginRight: 10, height: 30}}
             backgroundColor={baseColor.gray_middle}
             onPress={() => switchLocation()}
-            title={I18n.t(location.active?'disable':'enable')}/>);
+            title={I18n.t(location.active ? 'disable' : 'enable')}/>);
 
     };
-    useEffect(() => {
-        navigation.setOptions({
-            headerShown: true,
-            headerBackTitle: ' ',
-            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
-            headerTitle: I18n.t('editing'),
-            headerRight: () => headerRight(),
-        });
-    }, [navigation]);
-
     const handleSave = () => {
         let data = {
             phone: phone,
@@ -164,49 +165,122 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
         }
 
     };
+
+    //=================================================================================
+    // useEffect
+    //=================================================================================
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerBackTitle: ' ',
+            headerStatusBarHeight: Platform.OS === 'android' ? StatusBar.currentHeight - 20 : undefined,
+            headerTitle: I18n.t('editing'),
+            headerRight: () => headerRight(),
+        });
+    }, [navigation]);
+
+    //=================================================================================
+    // RENDER
+    //=================================================================================
+
+    const renderSportItem = ({item, index}) => {
+        return (
+            <View style={[StylesGlobal.input, {alignItems: 'left'}]}>
+                <Text style={StylesGlobal.textHint}>{item.name}</Text>
+            </View>
+        )
+
+    };
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{justifyContent: 'space-between', flex: 1}}>
                 <BaseLayout
                     isLoading={isLoading}>
                     <ScrollView>
-                        <Text style={[Styles.hint, {marginHorizontal: 10}]}>{I18n.t('phone')}</Text>
+                        <View style={[StylesGlobal.rowSpace, {marginTop: 20}]}>
+                            <View style={{width: '50%'}}>
+                                <Text style={[StylesGlobal.textHint, {marginHorizontal: 10}]}>{I18n.t('phone')}</Text>
+                                <TextInput
+                                    style={[StylesGlobal.input, {marginHorizontal: 10}]}
+                                    value={phone}
+                                    onChangeText={(v) => setPhone(v)}
+                                />
+                            </View>
+                            <View style={{width: '50%'}}>
+                                <Text style={[StylesGlobal.textHint, {marginHorizontal: 10}]}>{I18n.t('place')}</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        handleOpenPlace();
+                                    }}
+                                    style={[StylesGlobal.input, {marginHorizontal: 10, alignItems: 'left'}]}>
+                                    <Text style={[StylesGlobal.inputText]}>
+                                        {place?.name ?? ' '}
+                                    </Text>
+
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <Text style={[StylesGlobal.textHint, {
+                            marginHorizontal: 10,
+                            marginTop: 20
+                        }]}>{I18n.t('name')}</Text>
                         <TextInput
-                            style={[Styles.text, {marginHorizontal: 10}]}
-                            value={phone}
-                            onChangeText={(v) => setPhone(v)}
-                        />
-                        <Text style={[Styles.hint, {marginHorizontal: 10}]}>{I18n.t('name')}</Text>
-                        <TextInput
-                            style={[Styles.text, {marginHorizontal: 10}]}
+                            style={[StylesGlobal.input, {marginHorizontal: 10}]}
                             value={name}
                             onChangeText={(v) => setName(v)}
                         />
-                        <Text style={[Styles.hint, {marginHorizontal: 10}]}>{I18n.t('address')}</Text>
+                        <Text style={[StylesGlobal.textHint, {
+                            marginHorizontal: 10,
+                            marginTop: 20,
+                        }]}>{I18n.t('address')}</Text>
                         <TextInput
-                            style={[Styles.text, {marginHorizontal: 10}]}
+                            style={[StylesGlobal.input, {marginHorizontal: 10}]}
                             value={address}
                             onChangeText={(v) => setAddress(v)}
                         />
-                        <Text style={[Styles.hint, {marginHorizontal: 10}]}>{I18n.t('coordinates')}</Text>
+                        <Text style={[StylesGlobal.textHint, {
+                            marginHorizontal: 10,
+                            marginTop: 20,
+                        }]}>{I18n.t('coordinates')}</Text>
                         <TextInput
                             keyboardType={'numeric'}
-                            style={[Styles.text, {marginHorizontal: 10}]}
+                            style={[StylesGlobal.input, {marginHorizontal: 10}]}
                             value={coordinates}
                             onChangeText={(v) => setCoordinates(v)}
                         />
-                        <Text style={[Styles.hint, {marginHorizontal: 10}]}>{I18n.t('place')}
-                        </Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                handleOpenPlace();
-                            }}
-                            style={[StylesGlobal.input, {marginHorizontal: 10}]}>
-                            <Text style={[StylesGlobal.inputText]}>
-                                {place?.name}
-                            </Text>
-
-                        </TouchableOpacity>
+                        <View style={[StylesGlobal.rowSpace, {marginTop: 20}]}>
+                            <View style={{
+                                flex: 1,
+                                marginHorizontal: 10
+                            }}>
+                                <TouchableOpacity
+                                    onPress={() => openSports()}
+                                    style={[StylesGlobal.rowSpace, StylesGlobal.input]}>
+                                    <Text style={[StylesGlobal.text]}>{I18n.t('sport')}</Text>
+                                    <MaterialCommunityIcons
+                                        name={'chevron-right'}
+                                        size={24}
+                                        color={baseColor.secondary}
+                                    />
+                                </TouchableOpacity>
+                                <FlatList data={sports} renderItem={renderSportItem}/>
+                            </View>
+                            <View style={{
+                                flex: 1,
+                                marginHorizontal: 10
+                            }}>
+                                <TouchableOpacity
+                                    style={[StylesGlobal.rowSpace, StylesGlobal.input]}>
+                                    <Text style={[StylesGlobal.text]}>{I18n.t('coaches')}</Text>
+                                    <MaterialCommunityIcons
+                                        name={'chevron-right'}
+                                        size={24}
+                                        color={baseColor.secondary}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
                         <TouchableOpacity
                             style={{alignItems: 'center', marginTop: 30}}
@@ -225,6 +299,7 @@ export const LocationDetailsScreen = ({navigation, route}: Props) => {
                     </ScrollView>
                 </BaseLayout>
                 <ActionButton
+                    fontSize={18}
                     disable={!name || !phone || !address || !place}
                     styles={{margin: 20}}
                     onPress={() => handleSave()}

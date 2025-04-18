@@ -30,7 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import {useIsFocused} from '@react-navigation/native';
 import {baseColor} from "../../theme/appTheme";
-import {ClassesLocationsScreen} from "../locations/ClassesLocationsScreen";
+import {SearchLocationsScreen} from "../locations/SearchLocationsScreen";
 import {MyCalendarScreen} from "../myschedule/MyCalendarScreen";
 
 const Tab = createBottomTabNavigator();
@@ -269,14 +269,14 @@ export const MainScreen = ({route, navigation}: Props) => {
                 setConfirmNo(undefined);
             }}>
             <Tab.Navigator
-                initialRouteName={'ClassesLocationsScreen'}
+                initialRouteName={'SearchLocationsScreen'}
                 screenOptions={{
                     tabBarActiveTintColor: baseColor.green,
                 }}
             >
                 <Tab.Screen
-                    name="ClassesLocationsScreen"
-                    component={ClassesLocationsScreen}
+                    name="SearchLocationsScreen"
+                    component={SearchLocationsScreen}
                     options={{
                         tabBarLabel: I18n.t('search'),
                         tabBarIcon: ({color}) => (

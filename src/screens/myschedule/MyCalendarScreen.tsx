@@ -28,7 +28,7 @@ export const MyCalendarScreen = ({navigation}) => {
     const [memberSchedule, setMemberSchedule] = useState();
     const [markedDates, setMarkedDates] = useState();
     const isFocused = useIsFocused();
-    const selectedDayTrips = (memberBookings ?? []).concat(coachSchedule ?? []).filter(item => {
+    const selectedDayItems = (memberBookings ?? []).concat(coachSchedule ?? []).filter(item => {
         const date = new Date(item?.date?.seconds * 1000);
         return date.getDate() === day && date.getMonth() === monthFirstDay?.getMonth();
     });
@@ -410,7 +410,7 @@ export const MyCalendarScreen = ({navigation}) => {
                 />
                 <FlatList
                     style={{marginHorizontal: 10, marginTop: 20}}
-                    data={selectedDayTrips}
+                    data={selectedDayItems}
                     renderItem={renderItem}/>
                 {renderAddTrip()}
             </SafeAreaView>

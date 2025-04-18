@@ -8,7 +8,7 @@ import {EmailScreen} from '../screens/auth/email/EmailScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MainScreen} from '../screens/main/MainScreen';
 import SearchPlaceScreen from '../screens/places/SearchPlaceScreen';
-import {ClassesScreen} from '../screens/sports/ClassesScreen';
+import {SportsScreen} from '../screens/sports/SportsScreen';
 import {LocationCalendarScreen} from '../screens/locations/schedule/LocationCalendarScreen';
 import {MyBookingScreen} from '../screens/booking/MyBookingScreen';
 import ProfileScreen from '../screens/cabinet/profile/ProfileScreen';
@@ -80,7 +80,7 @@ export const StackNavigator = () => {
                 <Stack.Screen name="MyBookingScreen" component={MyBookingScreen}/>
                 {/*<Stack.Screen name="BlackListScreen" component={BlackListScreen}/>*/}
                 <Stack.Screen name="SearchPlaceScreen" component={SearchPlaceScreen}/>
-                <Stack.Screen name="ClassesScreen" component={ClassesScreen}/>
+                <Stack.Screen name="SportsScreen" component={SportsScreen}/>
                 <Stack.Screen name="UserDetailsScreen" component={UserDetailsScreen}/>
                 <Stack.Screen name="ChatsScreen" component={ChatsScreen}/>
                 <Stack.Screen name="MessagesScreen" component={MessagesScreen}/>
